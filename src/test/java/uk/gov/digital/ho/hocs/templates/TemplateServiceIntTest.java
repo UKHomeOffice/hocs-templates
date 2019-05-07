@@ -133,7 +133,7 @@ public class TemplateServiceIntTest {
         assertThat(contentList).contains("Somewhere");
         assertThat(contentList).contains("S1 1DJ");
         assertThat(contentList).contains("Reference: MIN/000001/19");
-        assertThat(contentList).contains("ref1");
+        assertThat(contentList).contains("Your Reference: ref1");
         assertThat(contentList).contains("Thank you for your letter of 20 March 2019 on behalf of Jon of 2 Elsewhere Road, AnyWhere, North, N1 2XR about");
         assertThat(contentList).contains("Murdock of The A Team");
         assertThat(contentList).doesNotContain("${primaryCorrespondentName}");
