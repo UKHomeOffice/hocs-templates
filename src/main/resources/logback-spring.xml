@@ -37,18 +37,6 @@
         <appender-ref ref="consoleAppender"/>
     </logger>
 
-    <logger name="org.apache.camel" additivity="false" level="WARN">
-        <appender-ref ref="consoleAppender"/>
-    </logger>
-
-    <logger name="com.amazonaws" additivity="false" level="WARN">
-        <appender-ref ref="consoleAppender"/>
-    </logger>
-
-    <logger name="org.camunda" additivity="false" level="WARN">
-        <appender-ref ref="consoleAppender"/>
-    </logger>
-
     <logger name="io.undertow" additivity="false" level="WARN">
         <appender-ref ref="consoleAppender"/>
     </logger>
@@ -57,11 +45,7 @@
         <appender-ref ref="consoleAppender"/>
     </logger>
 
-    <logger name="org.flywaydb" additivity="false" level="WARN">
-        <appender-ref ref="consoleAppender"/>
-    </logger>
-
-    <logger name="org.hibernate" additivity="false" level="WARN">
+    <logger name="org.docx4j" additivity="false" level="WARN">
         <appender-ref ref="consoleAppender"/>
     </logger>
 
