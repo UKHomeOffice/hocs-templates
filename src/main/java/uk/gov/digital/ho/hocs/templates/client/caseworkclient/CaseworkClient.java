@@ -31,7 +31,6 @@ public class CaseworkClient {
     }
 
     public CaseDataDto getCase(UUID caseUUID) {
-        log.info("Got Case details for case: {}", caseUUID, value(EVENT, CASE_CLIENT_GET_CASE_DETAILS_SUCCESS));
         CaseDataDto response = restHelper.get(serviceBaseURL, String.format("/case/%s", caseUUID), CaseDataDto.class);
         log.info("Got Case details for case: {}", caseUUID, value(EVENT, CASE_CLIENT_GET_CASE_DETAILS_SUCCESS));
         return response;
