@@ -1,0 +1,115 @@
+package uk.gov.digital.ho.hocs.templates;
+
+import org.apache.commons.compress.utils.IOUtils;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.core.io.ByteArrayResource;
+import uk.gov.digital.ho.hocs.templates.client.caseworkclient.CaseworkClient;
+import uk.gov.digital.ho.hocs.templates.client.caseworkclient.dto.AddressDto;
+import uk.gov.digital.ho.hocs.templates.client.caseworkclient.dto.CaseDataDto;
+import uk.gov.digital.ho.hocs.templates.client.caseworkclient.dto.CorrespondentDto;
+import uk.gov.digital.ho.hocs.templates.client.caseworkclient.dto.CorrespondentsDto;
+import uk.gov.digital.ho.hocs.templates.client.documentclient.DocumentClient;
+import uk.gov.digital.ho.hocs.templates.client.documentclient.dto.TemplateDocsDataDto;
+import uk.gov.digital.ho.hocs.templates.client.documentclient.dto.TemplatesDocsDataDto;
+import uk.gov.digital.ho.hocs.templates.client.infoclient.InfoClient;
+import uk.gov.digital.ho.hocs.templates.client.infoclient.dto.TeamDto;
+import uk.gov.digital.ho.hocs.templates.client.infoclient.dto.TemplateInfoDataDto;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.mockito.Mockito.*;
+
+@RunWith(MockitoJUnitRunner.class)
+public class TemplateServiceTest {
+
+    private static final String MIN = "MIN";
+    private final UUID CASE_UUID = UUID.fromString("11111111-1111-1111-1111-111111111111");
+    private final UUID TEMPLATE_INFO_UUID = UUID.fromString("2222222-2222-2222-2222-222222222222");
+    private final UUID TEMPLATE_DOCS_UUID = UUID.fromString("33333333-3333-3333-3333-333333333333");
+    private final UUID PRIMARY_CORRESPONDENT_UUID = UUID.fromString("44444444-4444-4444-4444-444444444444");
+    private final UUID TOPIC_UUID = UUID.fromString("55555555-5555-5555-5555-555555555555");
+    private final HashMap DATA = new HashMap<>() {{
+        put("DateOfCorrespondence", "2019-03-20");
+    }};
+    private final CaseDataDto CASE_DETAILS = new CaseDataDto(CASE_UUID, LocalDateTime.now(), MIN, "a", DATA, TOPIC_UUID, PRIMARY_CORRESPONDENT_UUID);
+    private final TemplateInfoDataDto TEMPLATE_INFO_DATA = new TemplateInfoDataDto("Min Template", TEMPLATE_INFO_UUID, MIN);
+    private final TemplateDocsDataDto TEMPLATE_DOCS_DATA = new TemplateDocsDataDto(TEMPLATE_DOCS_UUID, TEMPLATE_INFO_UUID, "TEMPLATE", "MIN template", "UPLOADED", LocalDateTime.now(), LocalDateTime.now(), false);
+    private final TemplatesDocsDataDto TEMPLATES_DOCS_DATA = new TemplatesDocsDataDto(new HashSet<>(Arrays.asList(TEMPLATE_DOCS_DATA)));
+
+    private TemplateService templateService;
+
+    @Mock
+    CaseworkClient caseworkClient;
+    @Mock
+    InfoClient infoClient;
+    @Mock
+    DocumentClient documentClient;
+
+
+    @Before
+    public void setUp() {
+        this.templateService = new TemplateService(caseworkClient, infoClient, documentClient);
+    }
+
+    @Test
+    public void shouldReturnPopulatedTemplate() throws Exception {
+
+        when(caseworkClient.getCase(CASE_UUID)).thenReturn(CASE_DETAILS);
+        when(infoClient.getTemplateUUID(CASE_DETAILS.getType())).thenReturn(TEMPLATE_INFO_DATA);
+        when(documentClient.getTemplateData(TEMPLATE_INFO_DATA.getUuid())).thenReturn(TEMPLATES_DOCS_DATA);
+        when(documentClient.getTemplate(TEMPLATE_DOCS_DATA.getUuid())).thenReturn(getDocumentByteArray());
+        when(caseworkClient.getCorrespondents(CASE_UUID)).thenReturn(getCorrespondents());
+        when(infoClient.getTeamForTopicAndStage(CASE_UUID, TOPIC_UUID, "DCU_MIN_PRIVATE_OFFICE")).thenReturn(getTeam());
+
+        templateService.buildTemplate(CASE_UUID);
+
+        verify(caseworkClient, times(1)).getCase(CASE_UUID);
+        verify(infoClient, times(1)).getTemplateUUID(CASE_DETAILS.getType());
+        verify(documentClient, times(1)).getTemplateData(TEMPLATE_INFO_UUID);
+        verify(documentClient, times(1)).getTemplate(TEMPLATE_DOCS_UUID);
+        verify(caseworkClient, times(1)).getCorrespondents(CASE_UUID);
+        verify(infoClient, times(1)).getTeamForTopicAndStage(CASE_UUID, TOPIC_UUID, "DCU_MIN_PRIVATE_OFFICE");
+
+
+        verifyNoMoreInteractions(caseworkClient);
+        verifyNoMoreInteractions(infoClient);
+        verifyNoMoreInteractions(documentClient);
+    }
+
+    private ByteArrayResource getDocumentByteArray() throws IOException {
+        byte[] bytes = null;
+        try {
+            InputStream templateInputStream = this.getClass().getClassLoader().getResourceAsStream("testdata/min.docx");
+            bytes = IOUtils.toByteArray(templateInputStream);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new ByteArrayResource(bytes);
+    }
+
+    private CorrespondentsDto getCorrespondents() {
+        AddressDto address = new AddressDto("S1 1DJ", "1 Somewhere Street", "Somewhere", "", "");
+        CorrespondentDto primaryCorrespondent = new CorrespondentDto(PRIMARY_CORRESPONDENT_UUID, LocalDateTime.now(), "MEMBER", CASE_UUID, "Bob Smith MP", address, "", "", "ref1");
+        CorrespondentDto constituent = new CorrespondentDto(UUID.fromString("66666666-6666-6666-6666-666666666666"), LocalDateTime.now(), "CONSTITUENT", CASE_UUID, "Bob", address, "", "", "");
+        return new CorrespondentsDto(Stream.of(primaryCorrespondent, constituent).collect(Collectors.toCollection(HashSet::new)));
+
+    }
+
+    private TeamDto getTeam() {
+        return new TeamDto("The A Team", UUID.fromString("77777777-7777-7777-7777-77777777777"), Boolean.TRUE, "Bobby");
+
+    }
+}
