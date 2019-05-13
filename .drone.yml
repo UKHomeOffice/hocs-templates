@@ -69,7 +69,7 @@ pipeline:
       - VERSION=build-${DRONE_BUILD_NUMBER}
       - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
     secrets:
-      - hocs-templates_dev
+      - hocs_templates_dev
     commands:
       - cd kube-hocs-templates
       - ./deploy.sh
@@ -84,8 +84,8 @@ pipeline:
       - ENVIRONMENT=${DRONE_DEPLOY_TO}
       - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
     secrets:
-      - hocs-templates_dev
-      - hocs-templates_demo
+      - hocs_templates_dev
+      - hocs_templates_demo
     commands:
       - cd kube-hocs-templates
       - ./deploy.sh
@@ -117,7 +117,7 @@ pipeline:
       - ENVIRONMENT=prod
       - KUBE_SERVER=https://kube-api-prod.prod.acp.homeoffice.gov.uk
     secrets:
-      - hocs-templates_prod
+      - hocs_templates_prod
     commands:
       - cd kube-hocs-templates
       - ./deploy.sh
