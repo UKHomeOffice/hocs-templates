@@ -22,7 +22,6 @@ else
         export REPLICAS="1"
     elif [[ ${ENVIRONMENT} == "dev" ]] ; then
         echo "deploy ${VERSION} to DEV namespace, using HOCS_TEMPLATES_DEV drone secret"
-        echo "kube token - ${HOCS_TEMPLATES_DEV}"
         export KUBE_TOKEN=${HOCS_TEMPLATES_DEV}
         export REPLICAS="1"
     else
