@@ -73,7 +73,7 @@ public class TemplateService {
         try {
              generatedTemplate = generateTemplate(variables, templateInputStream);
         } catch (Exception e) {
-            log.error("Generate Tempalte Exception: {}", e.getMessage(),value(EVENT, TEMPLATE_GENERATION_FAILURE));
+            log.error("Generate Template Exception: {}", e.getMessage(),value(EVENT, TEMPLATE_GENERATION_FAILURE));
         }
 
         return generatedTemplate;
