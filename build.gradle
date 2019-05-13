@@ -30,7 +30,7 @@ repositories {
 dependencies {
 	compile("org.springframework.boot:spring-boot-starter-web")
 	compile('org.springframework.retry:spring-retry')
-	
+	compile('org.springframework.boot:spring-boot-starter-actuator')
 	compile group: 'javax', name: 'javaee-api', version: '8.0.1'
 	compile (group: 'org.docx4j', name: 'docx4j', version: '6.1.2'){
 		exclude group: "org.slf4j", module: "slf4j-log4j12"
