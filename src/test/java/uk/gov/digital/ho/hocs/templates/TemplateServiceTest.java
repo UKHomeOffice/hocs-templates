@@ -43,7 +43,7 @@ public class TemplateServiceTest {
     private final HashMap DATA = new HashMap<>() {{
         put("DateOfCorrespondence", "2019-03-20");
     }};
-    private final CaseDataDto CASE_DETAILS = new CaseDataDto(CASE_UUID, LocalDateTime.now(), MIN, "a", DATA, TOPIC_UUID, PRIMARY_CORRESPONDENT_UUID);
+    private final CaseDataDto CASE_DETAILS = new CaseDataDto(CASE_UUID, MIN, "a", DATA, TOPIC_UUID, PRIMARY_CORRESPONDENT_UUID);
     private final TemplateInfoDataDto TEMPLATE_INFO_DATA = new TemplateInfoDataDto("Min Template", TEMPLATE_INFO_UUID, MIN);
     private final TemplateDocsDataDto TEMPLATE_DOCS_DATA = new TemplateDocsDataDto(TEMPLATE_DOCS_UUID, TEMPLATE_INFO_UUID, "TEMPLATE", "MIN template", "UPLOADED", LocalDateTime.now(), LocalDateTime.now(), false);
     private final TemplatesDocsDataDto TEMPLATES_DOCS_DATA = new TemplatesDocsDataDto(new HashSet<>(Arrays.asList(TEMPLATE_DOCS_DATA)));

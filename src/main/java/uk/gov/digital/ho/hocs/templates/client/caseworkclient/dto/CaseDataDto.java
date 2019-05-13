@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
@@ -17,9 +16,6 @@ public class CaseDataDto {
 
     @JsonProperty("uuid")
     private UUID uuid;
-
-    @JsonProperty("created")
-    private LocalDateTime created;
 
     @JsonProperty("type")
     private String type;
