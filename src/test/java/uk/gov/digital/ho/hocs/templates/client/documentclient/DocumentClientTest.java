@@ -36,11 +36,11 @@ public class DocumentClientTest {
     public void shouldGetTemplateData() {
         TemplatesDocsDataDto templatesDocsDataDto = new TemplatesDocsDataDto(new HashSet<>());
 
-        when(restHelper.get(eq(serviceBaseURL), eq(String.format("/document/case/%s/TEMPLATE", uuid)), eq(TemplatesDocsDataDto.class))).thenReturn(templatesDocsDataDto);
+        when(restHelper.get(eq(serviceBaseURL), eq(String.format("/document/reference/%s", uuid)), eq(TemplatesDocsDataDto.class))).thenReturn(templatesDocsDataDto);
 
         documentClient.getTemplateData(uuid);
 
-        verify(restHelper, times(1)).get(eq(serviceBaseURL), eq(String.format("/document/case/%s/TEMPLATE", uuid)), eq(TemplatesDocsDataDto.class));
+        verify(restHelper, times(1)).get(eq(serviceBaseURL), eq(String.format("/document/reference/%s", uuid)), eq(TemplatesDocsDataDto.class));
         verifyNoMoreInteractions(restHelper);
     }
 
@@ -58,10 +58,10 @@ public class DocumentClientTest {
 
     @Test(expected = HttpClientErrorException.NotFound.class)
     public void shouldThrowNotFoundExceptionWhenGetTemplateData(){
-        doThrow(HttpClientErrorException.NotFound.class).when(restHelper).get(eq(serviceBaseURL), eq(String.format("/document/case/%s/TEMPLATE", uuid)), eq(TemplatesDocsDataDto.class));
+        doThrow(HttpClientErrorException.NotFound.class).when(restHelper).get(eq(serviceBaseURL), eq(String.format("/document/reference/%s", uuid)), eq(TemplatesDocsDataDto.class));
         documentClient.getTemplateData(uuid);
 
-        verify(restHelper, times(1)).get(eq(serviceBaseURL), eq(String.format("/document/case/%s/TEMPLATE", uuid)), eq(TemplatesDocsDataDto.class));
+        verify(restHelper, times(1)).get(eq(serviceBaseURL), eq(String.format("/document/reference/%s", uuid)), eq(TemplatesDocsDataDto.class));
         verifyNoMoreInteractions(restHelper);
     }
 

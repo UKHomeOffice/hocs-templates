@@ -99,7 +99,7 @@ public class TemplateServiceIntTest {
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(MIN_TEMPLATE_INFO_DATA), MediaType.APPLICATION_JSON));
         mockService
-                .expect(requestTo("http://localhost:8083/document/case/22222222-2222-2222-2222-222222222222/TEMPLATE"))
+                .expect(requestTo("http://localhost:8083/document/reference/22222222-2222-2222-2222-222222222222"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(MIN_TEMPLATES_DOCS_DATA), MediaType.APPLICATION_JSON));
         mockService
