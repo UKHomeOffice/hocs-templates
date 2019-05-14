@@ -29,7 +29,7 @@ public class DocumentClient {
     }
 
     public TemplatesDocsDataDto getTemplateData(UUID templateUUID) {
-        TemplatesDocsDataDto response = restHelper.get(serviceBaseURL, String.format("/document/case/%s/TEMPLATE", templateUUID), TemplatesDocsDataDto.class);
+        TemplatesDocsDataDto response = restHelper.get(serviceBaseURL, String.format("/document/reference/%s", templateUUID), TemplatesDocsDataDto.class);
         log.info("Got Template template data for template uuid {}", templateUUID, value(EVENT, DOCS_CLIENT_GET_TEMPLATE_DATA_SUCCESS));
         return response;
     }
