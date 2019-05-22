@@ -28,7 +28,7 @@ public class TemplateResource {
 
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"template.docx\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\""+caseUUID+".docx\"")
                 .contentType(MediaType.asMediaType(MediaType.APPLICATION_OCTET_STREAM))
                 .contentLength(result.length)
                 .body(result);
