@@ -202,8 +202,8 @@ public class TemplateServiceIntTest {
                 "\"created\" : \"2019-04-30T15:56:24.241626\"," +
                 "\"type\" : \"MIN\"," +
                 "\"reference\" : \"MIN/000001/19\"," +
-                "\"primaryTopic\" : \"55555555-5555-5555-5555-555555555555\"," +
-                "\"primaryCorrespondent\" : \"44444444-4444-4444-4444-444444444444\" " +
+                "\"primaryTopicUUID\" : \"55555555-5555-5555-5555-555555555555\"," +
+                "\"primaryCorrespondentUUID\" : \"44444444-4444-4444-4444-444444444444\" " +
                 "}";
 
     }
