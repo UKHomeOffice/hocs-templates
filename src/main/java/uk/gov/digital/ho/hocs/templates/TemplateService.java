@@ -109,6 +109,7 @@ public class TemplateService {
         variables.put("primaryCorrespondentAddress2", Objects.toString(primary.getAddress().getAddress2(), ""));
         variables.put("primaryCorrespondentAddress3", Objects.toString(primary.getAddress().getAddress3(), ""));
         variables.put("primaryCorrespondentPostcode", Objects.toString(primary.getAddress().getPostcode(), ""));
+        variables.put("primaryCorrespondentEmail", Objects.toString(primary.getEmail(), ""));
         variables.put("caseReference", caseDetails.getReference());
         variables.put("primaryCorrespondentRef", (primary.getReference()) != null ? primary.getReference() : "");
         variables.put("dateOfLetter", formatDate(caseDetails.getData().get("DateOfCorrespondence")));
