@@ -109,6 +109,7 @@ public class TemplateServiceIntTest {
 
         List<String> contentList = documentPart.getContent().stream().map(b -> b.toString()).collect(Collectors.toList());
 
+        assertThat(contentList).contains("Bob@dummy-email.com");
         assertThat(contentList).contains("Bob Smith MP");
         assertThat(contentList).contains("1 Somewhere Street");
         assertThat(contentList).contains("Somewhere");
@@ -117,6 +118,7 @@ public class TemplateServiceIntTest {
         assertThat(contentList).contains("Your Reference: ref1");
         assertThat(contentList).contains("Thank you for your letter of 20 March 2019 on behalf of Jon of 2 Elsewhere Road, AnyWhere, North, N1 2XR about");
         assertThat(contentList).contains("Murdock of The A Team");
+        assertThat(contentList).doesNotContain("${primaryCorrespondentEmail}");
         assertThat(contentList).doesNotContain("${primaryCorrespondentName}");
         assertThat(contentList).doesNotContain("${primaryCorrespondentAddress1}");
         assertThat(contentList).doesNotContain("${primaryCorrespondentAddress2}");
@@ -165,7 +167,7 @@ public class TemplateServiceIntTest {
     private CorrespondentsDto getCorrespondents() {
         AddressDto address = new AddressDto("S1 1DJ", "1 Somewhere Street", "Somewhere", "", "");
         AddressDto address1 = new AddressDto("N1 2XR", "2 Elsewhere Road", "AnyWhere", "North", "");
-        CorrespondentDto primaryCorrespondent = new CorrespondentDto(PRIMARY_CORRESPONDENT_UUID, LocalDateTime.now(), "MEMBER", CASE_UUID, "Bob Smith MP", address, "", "", "ref1");
+        CorrespondentDto primaryCorrespondent = new CorrespondentDto(PRIMARY_CORRESPONDENT_UUID, LocalDateTime.now(), "MEMBER", CASE_UUID, "Bob Smith MP", address, "", "Bob@dummy-email.com", "ref1");
         CorrespondentDto constituent = new CorrespondentDto(UUID.fromString("66666666-6666-6666-6666-666666666666"), LocalDateTime.now(), "CONSTITUENT", CASE_UUID, "Jon", address1, "", "", "");
         return new CorrespondentsDto(Stream.of(primaryCorrespondent, constituent).collect(Collectors.toCollection(HashSet::new)));
 
