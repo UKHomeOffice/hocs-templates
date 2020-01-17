@@ -22,17 +22,13 @@ import uk.gov.digital.ho.hocs.templates.client.caseworkclient.dto.AddressDto;
 import uk.gov.digital.ho.hocs.templates.client.caseworkclient.dto.CorrespondentDto;
 import uk.gov.digital.ho.hocs.templates.client.caseworkclient.dto.CorrespondentsDto;
 import uk.gov.digital.ho.hocs.templates.client.documentclient.DocumentClient;
-import uk.gov.digital.ho.hocs.templates.client.documentclient.dto.TemplateDocsDataDto;
-import uk.gov.digital.ho.hocs.templates.client.documentclient.dto.TemplatesDocsDataDto;
 import uk.gov.digital.ho.hocs.templates.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.templates.client.infoclient.dto.TeamDto;
-import uk.gov.digital.ho.hocs.templates.client.infoclient.dto.TemplateInfoDataDto;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
@@ -53,7 +49,7 @@ public class TemplateServiceIntTest {
     private TemplateService templateService;
     private MockRestServiceServer mockService;
 
-    TestRestTemplate testRestTemplate = new TestRestTemplate();
+    private TestRestTemplate testRestTemplate = new TestRestTemplate();
 
     @LocalServerPort
     int port;
@@ -71,15 +67,9 @@ public class TemplateServiceIntTest {
     @Autowired
     DocumentClient documentClient;
 
-    private static final String MIN = "MIN";
     private final UUID CASE_UUID = UUID.fromString("11111111-1111-1111-1111-111111111111");
-    private final UUID TEMPLATE_INFO_UUID = UUID.fromString("22222222-2222-2222-2222-222222222222");
-    private final UUID TEMPLATE_DOCS_UUID = UUID.fromString("33333333-3333-3333-3333-333333333333");
+    private final UUID TEMPLATE_UUID = UUID.fromString("22222222-2222-2222-2222-222222222222");
     private final UUID PRIMARY_CORRESPONDENT_UUID = UUID.fromString("44444444-4444-4444-4444-444444444444");
-    private final TemplateInfoDataDto MIN_TEMPLATE_INFO_DATA = new TemplateInfoDataDto("Min Template", TEMPLATE_INFO_UUID, MIN);
-    private final TemplateDocsDataDto MIN_TEMPLATE_DOCS_DATA = new TemplateDocsDataDto(TEMPLATE_DOCS_UUID, TEMPLATE_INFO_UUID, "TEMPLATE", "MIN template", "UPLOADED", LocalDateTime.now(), LocalDateTime.now(), false);
-    private final TemplatesDocsDataDto MIN_TEMPLATES_DOCS_DATA = new TemplatesDocsDataDto(new HashSet<>(Arrays.asList(MIN_TEMPLATE_DOCS_DATA)));
-
 
     @Before
     public void setUp() throws IOException {
@@ -95,15 +85,7 @@ public class TemplateServiceIntTest {
                 .andExpect(method(GET))
                 .andRespond(withSuccess(getCaseDetailsAsJsonString(), MediaType.APPLICATION_JSON));
         mockService
-                .expect(requestTo("http://localhost:8085/caseType/MIN/template"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(MIN_TEMPLATE_INFO_DATA), MediaType.APPLICATION_JSON));
-        mockService
-                .expect(requestTo("http://localhost:8083/document/reference/22222222-2222-2222-2222-222222222222"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(MIN_TEMPLATES_DOCS_DATA), MediaType.APPLICATION_JSON));
-        mockService
-                .expect(requestTo("http://localhost:8083/document/33333333-3333-3333-3333-333333333333/file"))
+                .expect(requestTo("http://localhost:8083/document/22222222-2222-2222-2222-222222222222/file"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(getDocumentByteArray(), MediaType.APPLICATION_OCTET_STREAM));
         mockService
@@ -113,10 +95,9 @@ public class TemplateServiceIntTest {
     }
 
     @Test
-    public void shouldReturnPopulatedMINTemplate() throws Exception {
-
+    public void shouldReturnPopulatedTemplate() throws Exception {
         ResponseEntity<byte[]> result = testRestTemplate.exchange(
-                getBasePath() + "/template/" + CASE_UUID, GET, new HttpEntity(createValidAuthHeaders()), byte[].class);
+                getBasePath() + "case/" + CASE_UUID + "/template/" + TEMPLATE_UUID, GET, new HttpEntity(createValidAuthHeaders()), byte[].class);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
 
@@ -128,6 +109,7 @@ public class TemplateServiceIntTest {
 
         List<String> contentList = documentPart.getContent().stream().map(b -> b.toString()).collect(Collectors.toList());
 
+        assertThat(contentList).contains("Bob@dummy-email.com");
         assertThat(contentList).contains("Bob Smith MP");
         assertThat(contentList).contains("1 Somewhere Street");
         assertThat(contentList).contains("Somewhere");
@@ -136,6 +118,7 @@ public class TemplateServiceIntTest {
         assertThat(contentList).contains("Your Reference: ref1");
         assertThat(contentList).contains("Thank you for your letter of 20 March 2019 on behalf of Jon of 2 Elsewhere Road, AnyWhere, North, N1 2XR about");
         assertThat(contentList).contains("Murdock of The A Team");
+        assertThat(contentList).doesNotContain("${primaryCorrespondentEmail}");
         assertThat(contentList).doesNotContain("${primaryCorrespondentName}");
         assertThat(contentList).doesNotContain("${primaryCorrespondentAddress1}");
         assertThat(contentList).doesNotContain("${primaryCorrespondentAddress2}");
@@ -184,7 +167,7 @@ public class TemplateServiceIntTest {
     private CorrespondentsDto getCorrespondents() {
         AddressDto address = new AddressDto("S1 1DJ", "1 Somewhere Street", "Somewhere", "", "");
         AddressDto address1 = new AddressDto("N1 2XR", "2 Elsewhere Road", "AnyWhere", "North", "");
-        CorrespondentDto primaryCorrespondent = new CorrespondentDto(PRIMARY_CORRESPONDENT_UUID, LocalDateTime.now(), "MEMBER", CASE_UUID, "Bob Smith MP", address, "", "", "ref1");
+        CorrespondentDto primaryCorrespondent = new CorrespondentDto(PRIMARY_CORRESPONDENT_UUID, LocalDateTime.now(), "MEMBER", CASE_UUID, "Bob Smith MP", address, "", "Bob@dummy-email.com", "ref1");
         CorrespondentDto constituent = new CorrespondentDto(UUID.fromString("66666666-6666-6666-6666-666666666666"), LocalDateTime.now(), "CONSTITUENT", CASE_UUID, "Jon", address1, "", "", "");
         return new CorrespondentsDto(Stream.of(primaryCorrespondent, constituent).collect(Collectors.toCollection(HashSet::new)));
 

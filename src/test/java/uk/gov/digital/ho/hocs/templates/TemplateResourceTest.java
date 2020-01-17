@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -19,7 +18,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 public class TemplateResourceTest {
 
     private final UUID caseUUID = UUID.randomUUID();
-    private final byte[] bytes = caseUUID.toString().getBytes();
+    private final UUID templateUUID = UUID.randomUUID();
+    private final TemplateResult result = new TemplateResult("file", caseUUID.toString().getBytes());
     @Mock
     private TemplateService templateService;
     private TemplateResource templateResource;
@@ -30,13 +30,13 @@ public class TemplateResourceTest {
     }
 
     @Test
-    public void shouldCreateTemplateFromCaseUUID() throws Exception {
+    public void shouldCreateTemplateFromCaseUUID() {
 
-        when(templateService.buildTemplate(caseUUID)).thenReturn(bytes);
+        when(templateService.buildTemplate(caseUUID, templateUUID)).thenReturn(result);
 
-        ResponseEntity<byte[]> response = templateResource.populateTemplate(caseUUID);
+        ResponseEntity<byte[]> response = templateResource.populateTemplate(caseUUID, templateUUID);
 
-        verify(templateService, times(1)).buildTemplate(caseUUID);
+        verify(templateService).buildTemplate(caseUUID, templateUUID);
 
         verifyNoMoreInteractions(templateService);
 

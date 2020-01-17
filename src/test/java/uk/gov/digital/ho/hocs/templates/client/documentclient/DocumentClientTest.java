@@ -8,9 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.digital.ho.hocs.templates.application.RestHelper;
-import uk.gov.digital.ho.hocs.templates.client.documentclient.dto.TemplatesDocsDataDto;
 
-import java.util.HashSet;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.eq;
@@ -25,23 +23,11 @@ public class DocumentClientTest {
     private final String serviceBaseURL = "http://localhost:8087";
     private final UUID uuid = UUID.randomUUID();
 
-    DocumentClient documentClient;
+    private DocumentClient documentClient;
 
     @Before
     public void setUp() {
         this.documentClient = new DocumentClient(restHelper, serviceBaseURL);
-    }
-
-    @Test
-    public void shouldGetTemplateData() {
-        TemplatesDocsDataDto templatesDocsDataDto = new TemplatesDocsDataDto(new HashSet<>());
-
-        when(restHelper.get(eq(serviceBaseURL), eq(String.format("/document/reference/%s", uuid)), eq(TemplatesDocsDataDto.class))).thenReturn(templatesDocsDataDto);
-
-        documentClient.getTemplateData(uuid);
-
-        verify(restHelper, times(1)).get(eq(serviceBaseURL), eq(String.format("/document/reference/%s", uuid)), eq(TemplatesDocsDataDto.class));
-        verifyNoMoreInteractions(restHelper);
     }
 
     @Test
@@ -57,16 +43,7 @@ public class DocumentClientTest {
     }
 
     @Test(expected = HttpClientErrorException.NotFound.class)
-    public void shouldThrowNotFoundExceptionWhenGetTemplateData(){
-        doThrow(HttpClientErrorException.NotFound.class).when(restHelper).get(eq(serviceBaseURL), eq(String.format("/document/reference/%s", uuid)), eq(TemplatesDocsDataDto.class));
-        documentClient.getTemplateData(uuid);
-
-        verify(restHelper, times(1)).get(eq(serviceBaseURL), eq(String.format("/document/reference/%s", uuid)), eq(TemplatesDocsDataDto.class));
-        verifyNoMoreInteractions(restHelper);
-    }
-
-    @Test(expected = HttpClientErrorException.NotFound.class)
-    public void shouldThrowNotFoundExceptionWhenGetTemplate(){
+    public void shouldThrowNotFoundExceptionWhenGetTemplate() {
         doThrow(HttpClientErrorException.NotFound.class).when(restHelper).get(eq(serviceBaseURL), eq(String.format("/document/%s/file", uuid)), eq(ByteArrayResource.class));
         documentClient.getTemplate(uuid);
 

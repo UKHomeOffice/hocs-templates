@@ -7,16 +7,14 @@ import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.templates.client.caseworkclient.CaseworkClient;
 import uk.gov.digital.ho.hocs.templates.client.caseworkclient.dto.AddressDto;
 import uk.gov.digital.ho.hocs.templates.client.caseworkclient.dto.CaseDataDto;
 import uk.gov.digital.ho.hocs.templates.client.caseworkclient.dto.CorrespondentDto;
 import uk.gov.digital.ho.hocs.templates.client.caseworkclient.dto.CorrespondentsDto;
-import uk.gov.digital.ho.hocs.templates.client.caseworkclient.CaseworkClient;
 import uk.gov.digital.ho.hocs.templates.client.documentclient.DocumentClient;
-import uk.gov.digital.ho.hocs.templates.client.documentclient.dto.TemplatesDocsDataDto;
 import uk.gov.digital.ho.hocs.templates.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.templates.client.infoclient.dto.TeamDto;
-import uk.gov.digital.ho.hocs.templates.client.infoclient.dto.TemplateInfoDataDto;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -49,7 +47,7 @@ public class TemplateService {
         this.documentClient = documentClient;
     }
 
-    public byte[] buildTemplate(UUID caseUUID) {
+    public TemplateResult buildTemplate(UUID caseUUID, UUID templateUUID) {
 
         CaseDataDto caseDetails = caseworkClient.getCase(caseUUID);
 
@@ -67,16 +65,16 @@ public class TemplateService {
 
         HashMap<String, String> variables = createVariablesMap(caseDetails, primary, constituent, team);
 
-        InputStream templateInputStream = getTemplateAsInputStream(caseDetails);
+        InputStream templateInputStream = getTemplateAsInputStream(templateUUID);
 
         byte[] generatedTemplate = null;
         try {
-             generatedTemplate = generateTemplate(variables, templateInputStream);
+            generatedTemplate = generateTemplate(variables, templateInputStream);
         } catch (Exception e) {
-            log.error("Generate Template Exception: {}", e.getMessage(),value(EVENT, TEMPLATE_GENERATION_FAILURE));
+            log.error("Generate Template Exception: {}", e.getMessage(), value(EVENT, TEMPLATE_GENERATION_FAILURE));
         }
 
-        return generatedTemplate;
+        return new TemplateResult(caseDetails.getReference(), generatedTemplate);
     }
 
 
@@ -87,7 +85,7 @@ public class TemplateService {
             stageType = "DCU_" + caseDetails.getType() + "_PRIVATE_OFFICE";
             team = infoClient.getTeamForTopicAndStage(caseUUID, caseDetails.getPrimaryTopic(), stageType);
         } catch (Exception e) {
-            log.error("Info Service could not get Team letter name for {}" , stageType , value(EVENT, INFO_CLIENT_GET_TEAM_NOT_FOUND));
+            log.error("Info Service could not get Team letter name for {}", stageType, value(EVENT, INFO_CLIENT_GET_TEAM_NOT_FOUND));
         }
         return team;
     }
@@ -98,15 +96,9 @@ public class TemplateService {
         return date.format(dateTimeFormatter);
     }
 
-    private InputStream getTemplateAsInputStream(CaseDataDto caseDetails) {
-        TemplateInfoDataDto templateInfoDataDto = infoClient.getTemplateUUID(caseDetails.getType());
-        TemplatesDocsDataDto templatesDocsDataDto = documentClient.getTemplateData(templateInfoDataDto.getUuid());
-
-        UUID templateUUID = templatesDocsDataDto.getTemplatesData().iterator().next().getUuid();
+    private InputStream getTemplateAsInputStream(UUID templateUUID) {
 
         ByteArrayResource templateByteArrayResource = documentClient.getTemplate(templateUUID);
-
-
         return new ByteArrayInputStream(templateByteArrayResource.getByteArray());
     }
 
@@ -117,6 +109,7 @@ public class TemplateService {
         variables.put("primaryCorrespondentAddress2", Objects.toString(primary.getAddress().getAddress2(), ""));
         variables.put("primaryCorrespondentAddress3", Objects.toString(primary.getAddress().getAddress3(), ""));
         variables.put("primaryCorrespondentPostcode", Objects.toString(primary.getAddress().getPostcode(), ""));
+        variables.put("primaryCorrespondentEmail", Objects.toString(primary.getEmail(), ""));
         variables.put("caseReference", caseDetails.getReference());
         variables.put("primaryCorrespondentRef", (primary.getReference()) != null ? primary.getReference() : "");
         variables.put("dateOfLetter", formatDate(caseDetails.getData().get("DateOfCorrespondence")));
