@@ -127,10 +127,10 @@ pipeline:
   deploy-to-wcs-qa:
     image: quay.io/ukhomeofficedigital/kd:v1.16.0
     environment:
-      - ENVIRONMENT=cs-qa
+      - ENVIRONMENT=wcs-qa
       - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
     secrets:
-      - hocs_templates_cs_qa
+      - hocs_templates_wcs_qa
     commands:
       - source version.txt
       - echo $VERSION
@@ -138,7 +138,7 @@ pipeline:
       - ./deploy.sh
     when:
       event: deployment
-      environment: cs-qa
+      environment: wcs-qa
 
   deploy-to-cs-prod:
     image: quay.io/ukhomeofficedigital/kd:v1.16.0
