@@ -110,9 +110,9 @@ public class TemplateServiceIntTest {
         List<String> contentList = documentPart.getContent().stream().map(b -> b.toString()).collect(Collectors.toList());
 
         assertThat(contentList).contains("Bob@dummy-email.com");
-        assertThat(contentList).contains("Bob Smith MP");
-        assertThat(contentList).contains("1 Somewhere Street");
-        assertThat(contentList).contains("Somewhere");
+        assertThat(contentList).contains("Bob & Smith");
+        assertThat(contentList).contains("1 st's Somewhere Street");
+        assertThat(contentList).contains("Somewhere, else");
         assertThat(contentList).contains("S1 1DJ");
         assertThat(contentList).contains("Reference: MIN/000001/19");
         assertThat(contentList).contains("Your Reference: ref1");
@@ -165,9 +165,9 @@ public class TemplateServiceIntTest {
     }
 
     private CorrespondentsDto getCorrespondents() {
-        AddressDto address = new AddressDto("S1 1DJ", "1 Somewhere Street", "Somewhere", "", "");
+        AddressDto address = new AddressDto("S1 1DJ", "1 st's Somewhere Street", "Somewhere, else", "", "");
         AddressDto address1 = new AddressDto("N1 2XR", "2 Elsewhere Road", "AnyWhere", "North", "");
-        CorrespondentDto primaryCorrespondent = new CorrespondentDto(PRIMARY_CORRESPONDENT_UUID, LocalDateTime.now(), "MEMBER", CASE_UUID, "Bob Smith MP", address, "", "Bob@dummy-email.com", "ref1");
+        CorrespondentDto primaryCorrespondent = new CorrespondentDto(PRIMARY_CORRESPONDENT_UUID, LocalDateTime.now(), "MEMBER", CASE_UUID, "Bob & Smith", address, "", "Bob@dummy-email.com", "ref1");
         CorrespondentDto constituent = new CorrespondentDto(UUID.fromString("66666666-6666-6666-6666-666666666666"), LocalDateTime.now(), "CONSTITUENT", CASE_UUID, "Jon", address1, "", "", "");
         return new CorrespondentsDto(Stream.of(primaryCorrespondent, constituent).collect(Collectors.toCollection(HashSet::new)));
 
