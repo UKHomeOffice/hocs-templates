@@ -7,6 +7,7 @@ import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.HtmlUtils;
 import uk.gov.digital.ho.hocs.templates.client.caseworkclient.CaseworkClient;
 import uk.gov.digital.ho.hocs.templates.client.caseworkclient.dto.AddressDto;
 import uk.gov.digital.ho.hocs.templates.client.caseworkclient.dto.CaseDataDto;
@@ -64,6 +65,7 @@ public class TemplateService {
         TeamDto team = getTeamDetails(caseUUID, caseDetails);
 
         HashMap<String, String> variables = createVariablesMap(caseDetails, primary, constituent, team);
+        variables.replaceAll((k, v) -> HtmlUtils.htmlEscape(v));
 
         InputStream templateInputStream = getTemplateAsInputStream(templateUUID);
 
