@@ -173,10 +173,10 @@ spec:
                   key: plaintext
           resources:
             limits:
-              cpu: 850m
-              memory: 1536Mi
+              cpu: 1200m
+              memory: 2048Mi
             requests:
-              cpu: 100m
+              cpu: 200m
               memory: 512Mi
           ports:
             - name: http
