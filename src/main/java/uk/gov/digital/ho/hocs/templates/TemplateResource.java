@@ -25,15 +25,12 @@ public class TemplateResource {
 
     @GetMapping(value = "case/{caseUUID}/template/{templateUUID}", produces = APPLICATION_OCTET_STREAM)
     public ResponseEntity<byte[]> populateTemplate(@PathVariable UUID caseUUID, @PathVariable UUID templateUUID) {
-
         TemplateResult result = templateService.buildTemplate(caseUUID, templateUUID);
-
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + result.getFilename() + ".docx\"")
                 .contentType(MediaType.asMediaType(MediaType.APPLICATION_OCTET_STREAM))
                 .contentLength(result.getTemplateData().length)
                 .body(result.getTemplateData());
-
     }
 }

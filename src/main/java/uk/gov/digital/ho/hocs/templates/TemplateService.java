@@ -22,10 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.templates.application.LogEvent.*;
@@ -62,7 +59,7 @@ public class TemplateService {
                 filter(p -> p.getType().equals(CONSTITUENT)).
                 findFirst().orElse(new CorrespondentDto(new AddressDto()));
 
-        TeamDto team = getTeamDetails(caseUUID, caseDetails);
+        TeamDto team = getPrivateOfficeTeamDetails(caseUUID, caseDetails);
 
         HashMap<String, String> variables = createVariablesMap(caseDetails, primary, constituent, team);
         variables.replaceAll((k, v) -> HtmlUtils.htmlEscape(v));
@@ -79,15 +76,18 @@ public class TemplateService {
         return new TemplateResult(caseDetails.getReference(), generatedTemplate);
     }
 
-
-    private TeamDto getTeamDetails(UUID caseUUID, CaseDataDto caseDetails) {
+    private TeamDto getPrivateOfficeTeamDetails(UUID caseUUID, CaseDataDto caseDetails) {
+        List<String> privateOfficeCaseTypes = List.of("MIN", "DTEN");
         TeamDto team = new TeamDto();
-        String stageType = null;
-        try {
-            stageType = "DCU_" + caseDetails.getType() + "_PRIVATE_OFFICE";
-            team = infoClient.getTeamForTopicAndStage(caseUUID, caseDetails.getPrimaryTopic(), stageType);
-        } catch (Exception e) {
-            log.error("Info Service could not get Team letter name for {}", stageType, value(EVENT, INFO_CLIENT_GET_TEAM_NOT_FOUND));
+
+        if (privateOfficeCaseTypes.contains(caseDetails.getType())) {
+            String stageType = "DCU_" + caseDetails.getType() + "_PRIVATE_OFFICE";
+
+            try {
+                team = infoClient.getTeamForTopicAndStage(caseUUID, caseDetails.getPrimaryTopic(), stageType);
+            } catch (Exception e) {
+                log.error("Info Service could not get Team letter name for {}", stageType, value(EVENT, INFO_CLIENT_GET_TEAM_NOT_FOUND));
+            }
         }
         return team;
     }
@@ -125,7 +125,6 @@ public class TemplateService {
     }
 
     private byte[] generateTemplate(Map<String, String> variables, InputStream templateInputStream) throws Exception {
-
         WordprocessingMLPackage wordMLPackage = WordprocessingMLPackage.load(templateInputStream);
 
         MainDocumentPart documentPart = wordMLPackage.getMainDocumentPart();
