@@ -19,6 +19,7 @@ import uk.gov.digital.ho.hocs.templates.client.infoclient.dto.TeamDto;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
@@ -62,6 +63,7 @@ public class TemplateServiceTest {
         when(caseworkClient.getCase(CASE_UUID)).thenReturn(CASE_DETAILS);
         when(documentClient.getTemplate(TEMPLATE_DOCS_UUID)).thenReturn(getDocumentByteArray());
         when(caseworkClient.getCorrespondents(CASE_UUID)).thenReturn(getCorrespondents());
+        when(infoClient.getCaseTypeStages("MIN")).thenReturn(Collections.singletonList("DCU_MIN_PRIVATE_OFFICE"));
         when(infoClient.getTeamForTopicAndStage(CASE_UUID, TOPIC_UUID, "DCU_MIN_PRIVATE_OFFICE")).thenReturn(getTeam());
 
         TemplateResult result = templateService.buildTemplate(CASE_UUID, TEMPLATE_DOCS_UUID);
@@ -73,6 +75,7 @@ public class TemplateServiceTest {
         verify(documentClient).getTemplate(TEMPLATE_DOCS_UUID);
         verify(caseworkClient).getCorrespondents(CASE_UUID);
         verify(infoClient).getTeamForTopicAndStage(CASE_UUID, TOPIC_UUID, "DCU_MIN_PRIVATE_OFFICE");
+        verify(infoClient).getCaseTypeStages(eq("MIN"));
 
 
         verifyNoMoreInteractions(caseworkClient);

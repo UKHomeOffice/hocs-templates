@@ -22,7 +22,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.Optional;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.templates.application.LogEvent.*;
@@ -46,7 +51,6 @@ public class TemplateService {
     }
 
     public TemplateResult buildTemplate(UUID caseUUID, UUID templateUUID) {
-
         CaseDataDto caseDetails = caseworkClient.getCase(caseUUID);
 
         CorrespondentsDto correspondents = caseworkClient.getCorrespondents(caseUUID);
@@ -77,16 +81,18 @@ public class TemplateService {
     }
 
     private TeamDto getPrivateOfficeTeamDetails(UUID caseUUID, CaseDataDto caseDetails) {
-        List<String> privateOfficeCaseTypes = List.of("MIN", "DTEN");
+        final List<String> caseTypeStages = infoClient.getCaseTypeStages(caseDetails.getType());
+        final Optional<String> privateOfficeStage =
+                caseTypeStages.stream()
+                        .filter(stage -> stage.contains("PRIVATE_OFFICE"))
+                        .findFirst();
+
         TeamDto team = new TeamDto();
-
-        if (privateOfficeCaseTypes.contains(caseDetails.getType())) {
-            String stageType = "DCU_" + caseDetails.getType() + "_PRIVATE_OFFICE";
-
+        if (privateOfficeStage.isPresent()) {
             try {
-                team = infoClient.getTeamForTopicAndStage(caseUUID, caseDetails.getPrimaryTopic(), stageType);
+                team = infoClient.getTeamForTopicAndStage(caseUUID, caseDetails.getPrimaryTopic(), privateOfficeStage.get());
             } catch (Exception e) {
-                log.error("Info Service could not get Team letter name for {}", stageType, value(EVENT, INFO_CLIENT_GET_TEAM_NOT_FOUND));
+                log.error("Info Service could not get Team letter name for {}", privateOfficeStage.get(), value(EVENT, INFO_CLIENT_GET_TEAM_NOT_FOUND));
             }
         }
         return team;

@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -60,6 +61,7 @@ public class TemplateServiceTROTest {
         when(caseworkClient.getCase(CASE_UUID)).thenReturn(CASE_DETAILS);
         when(documentClient.getTemplate(TEMPLATE_DOCS_UUID)).thenReturn(getDocumentByteArray());
         when(caseworkClient.getCorrespondents(CASE_UUID)).thenReturn(getCorrespondents());
+        when(infoClient.getCaseTypeStages("TRO")).thenReturn(Collections.emptyList());
 
         TemplateResult result = templateService.buildTemplate(CASE_UUID, TEMPLATE_DOCS_UUID);
 
@@ -69,6 +71,7 @@ public class TemplateServiceTROTest {
         verify(caseworkClient).getCase(CASE_UUID);
         verify(documentClient).getTemplate(TEMPLATE_DOCS_UUID);
         verify(caseworkClient).getCorrespondents(CASE_UUID);
+        verify(infoClient, times(1)).getCaseTypeStages(eq("TRO"));
         verify(infoClient, never()).getTeamForTopicAndStage(CASE_UUID, TOPIC_UUID, "DCU_TRO_PRIVATE_OFFICE");
 
         verifyNoMoreInteractions(caseworkClient);
