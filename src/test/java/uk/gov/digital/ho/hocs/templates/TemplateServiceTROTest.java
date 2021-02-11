@@ -92,7 +92,7 @@ public class TemplateServiceTROTest {
     }
 
     private CorrespondentsDto getCorrespondents() {
-        AddressDto address = new AddressDto("S1 1DJ", "1 Somewhere Street", "Somewhere", "", "");
+        AddressDto address = new AddressDto("S1 1CJ", "1 Somewhere Street", "Somewhere", "", "");
         CorrespondentDto primaryCorrespondent = new CorrespondentDto(PRIMARY_CORRESPONDENT_UUID, LocalDateTime.now(), "MEMBER", CASE_UUID, "Bob Smith MP", address, "", "", "ref1");
         CorrespondentDto constituent = new CorrespondentDto(UUID.fromString("66666666-6666-6666-6666-666666666666"), LocalDateTime.now(), "CONSTITUENT", CASE_UUID, "Bob", address, "", "", "");
         return new CorrespondentsDto(Stream.of(primaryCorrespondent, constituent).collect(Collectors.toCollection(HashSet::new)));
