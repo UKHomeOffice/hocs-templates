@@ -23,9 +23,11 @@ import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.Optional;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.templates.application.LogEvent.*;
@@ -49,7 +51,6 @@ public class TemplateService {
     }
 
     public TemplateResult buildTemplate(UUID caseUUID, UUID templateUUID) {
-
         CaseDataDto caseDetails = caseworkClient.getCase(caseUUID);
 
         CorrespondentsDto correspondents = caseworkClient.getCorrespondents(caseUUID);
@@ -62,7 +63,7 @@ public class TemplateService {
                 filter(p -> p.getType().equals(CONSTITUENT)).
                 findFirst().orElse(new CorrespondentDto(new AddressDto()));
 
-        TeamDto team = getTeamDetails(caseUUID, caseDetails);
+        TeamDto team = getPrivateOfficeTeamDetails(caseUUID, caseDetails);
 
         HashMap<String, String> variables = createVariablesMap(caseDetails, primary, constituent, team);
         variables.replaceAll((k, v) -> HtmlUtils.htmlEscape(v));
@@ -79,15 +80,20 @@ public class TemplateService {
         return new TemplateResult(caseDetails.getReference(), generatedTemplate);
     }
 
+    private TeamDto getPrivateOfficeTeamDetails(UUID caseUUID, CaseDataDto caseDetails) {
+        final List<String> caseTypeStages = infoClient.getCaseTypeStages(caseDetails.getType());
+        final Optional<String> privateOfficeStage =
+                caseTypeStages.stream()
+                        .filter(stage -> stage.contains("PRIVATE_OFFICE"))
+                        .findFirst();
 
-    private TeamDto getTeamDetails(UUID caseUUID, CaseDataDto caseDetails) {
         TeamDto team = new TeamDto();
-        String stageType = null;
-        try {
-            stageType = "DCU_" + caseDetails.getType() + "_PRIVATE_OFFICE";
-            team = infoClient.getTeamForTopicAndStage(caseUUID, caseDetails.getPrimaryTopic(), stageType);
-        } catch (Exception e) {
-            log.error("Info Service could not get Team letter name for {}", stageType, value(EVENT, INFO_CLIENT_GET_TEAM_NOT_FOUND));
+        if (privateOfficeStage.isPresent()) {
+            try {
+                team = infoClient.getTeamForTopicAndStage(caseUUID, caseDetails.getPrimaryTopic(), privateOfficeStage.get());
+            } catch (Exception e) {
+                log.error("Info Service could not get Team letter name for {}", privateOfficeStage.get(), value(EVENT, INFO_CLIENT_GET_TEAM_NOT_FOUND));
+            }
         }
         return team;
     }
@@ -125,7 +131,6 @@ public class TemplateService {
     }
 
     private byte[] generateTemplate(Map<String, String> variables, InputStream templateInputStream) throws Exception {
-
         WordprocessingMLPackage wordMLPackage = WordprocessingMLPackage.load(templateInputStream);
 
         MainDocumentPart documentPart = wordMLPackage.getMainDocumentPart();

@@ -29,6 +29,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
@@ -46,7 +47,6 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class TemplateServiceIntTest {
 
-    private TemplateService templateService;
     private MockRestServiceServer mockService;
 
     private TestRestTemplate testRestTemplate = new TestRestTemplate();
@@ -73,7 +73,6 @@ public class TemplateServiceIntTest {
 
     @Before
     public void setUp() throws IOException {
-        this.templateService = new TemplateService(caseworkClient, infoClient, documentClient);
         mockService = buildMockService(restTemplate);
 
         mockService
@@ -88,6 +87,10 @@ public class TemplateServiceIntTest {
                 .expect(requestTo("http://localhost:8083/document/22222222-2222-2222-2222-222222222222/file"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(getDocumentByteArray(), MediaType.APPLICATION_OCTET_STREAM));
+        mockService
+                .expect(requestTo("http://localhost:8085/caseType/MIN/stages"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(Collections.singletonList("DCU_MIN_PRIVATE_OFFICE")), MediaType.APPLICATION_JSON));
         mockService
                 .expect(requestTo("http://localhost:8085/team/case/11111111-1111-1111-1111-111111111111/topic/55555555-5555-5555-5555-555555555555/stage/DCU_MIN_PRIVATE_OFFICE"))
                 .andExpect(method(GET))
@@ -128,9 +131,7 @@ public class TemplateServiceIntTest {
         assertThat(contentList).doesNotContain("${primaryCorrespondentRef}");
         assertThat(contentList).doesNotContain("Thank you for your letter of ${dateOfLetter} on behalf of ${constituentName} of ${constituentAddress1}${constituentAddress2}${constituentAddress3}${constituentPostcode} about");
         assertThat(contentList).doesNotContain("${poTeamLetterName}");
-
     }
-
 
     private MockRestServiceServer buildMockService(RestTemplate restTemplate) {
         MockRestServiceServer.MockRestServiceServerBuilder infoBuilder = bindTo(restTemplate);
@@ -151,13 +152,11 @@ public class TemplateServiceIntTest {
         return headers;
     }
 
-
-    private ByteArrayResource getDocumentByteArray() throws IOException {
+    private ByteArrayResource getDocumentByteArray() {
         byte[] bytes = null;
         try {
             InputStream templateInputStream = this.getClass().getClassLoader().getResourceAsStream("testdata/min.docx");
             bytes = IOUtils.toByteArray(templateInputStream);
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -173,10 +172,8 @@ public class TemplateServiceIntTest {
 
     }
 
-
     private TeamDto getTeam() {
         return new TeamDto("The A Team", UUID.fromString("77777777-7777-7777-7777-77777777777"), Boolean.TRUE, "Murdock of The A Team");
-
     }
 
     private String getCaseDetailsAsJsonString() throws JsonProcessingException {
@@ -188,6 +185,5 @@ public class TemplateServiceIntTest {
                 "\"primaryTopicUUID\" : \"55555555-5555-5555-5555-555555555555\"," +
                 "\"primaryCorrespondentUUID\" : \"44444444-4444-4444-4444-444444444444\" " +
                 "}";
-
     }
 }
