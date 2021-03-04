@@ -1,0 +1,232 @@
+---
+kind: pipeline
+name: default
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: build-project
+  pull: if-not-exists
+  image: quay.io/ukhomeofficedigital/openjdk11:v11.0.5_10
+  commands:
+  - ./gradlew build
+  when:
+    event:
+    - push
+    - pull_request
+    - tag
+
+- name: sonar-scanner
+  pull: if-not-exists
+  image: quay.io/ukhomeofficedigital/sonar-scanner:v3.0.3
+  when:
+    event:
+    - push
+    - pull_request
+    - tag
+
+- name: docker-build
+  pull: if-not-exists
+  image: docker:17.09.1
+  commands:
+  - docker build -t hocs-templates .
+  environment:
+    DOCKER_HOST: tcp://172.17.0.1:2375
+  when:
+    branch:
+    - master
+    - refs/tags/*
+    event:
+    - push
+    - tag
+
+- name: install-docker-image
+  pull: if-not-exists
+  image: docker:17.09.1
+  commands:
+  - docker login -u="ukhomeofficedigital+hocs" -p=$${DOCKER_PASSWORD} quay.io
+  - docker tag hocs-templates quay.io/ukhomeofficedigital/hocs-templates:build-$${DRONE_BUILD_NUMBER}
+  - docker tag hocs-templates quay.io/ukhomeofficedigital/hocs-templates:latest
+  - docker push quay.io/ukhomeofficedigital/hocs-templates:build-$${DRONE_BUILD_NUMBER}
+  - docker push quay.io/ukhomeofficedigital/hocs-templates:latest
+  environment:
+    DOCKER_HOST: tcp://172.17.0.1:2375
+    DOCKER_PASSWORD:
+      from_secret: docker_password
+  when:
+    branch:
+    - master
+    event:
+    - push
+
+- name: docker-semver-tag
+  pull: if-not-exists
+  image: quay.io/ukhomeofficedigital/hocs-version-bot:build-25
+  commands:
+  - /app/hocs-deploy --version=$${SEMVER} --serviceGitToken=$${GIT_PASSWORD} --service=hocs-templates --gitToken=$${GITHUB_PASSWORD} --gitRepo="https://gitlab.digital.homeoffice.gov.uk/hocs/hocs-versions.git" --environment=qa --dockerRepository=quay.io/ukhomeofficedigital --sourceBuild=$${IMAGE_VERSION} --registryUser=ukhomeofficedigital+hocs --registryPassword=$${DOCKER_PASSWORD}
+  environment:
+    DOCKER_API_VERSION: 1.37
+    DOCKER_HOST: tcp://172.17.0.1:2375
+    DOCKER_PASSWORD:
+      from_secret: docker_password
+    GITHUB_PASSWORD:
+      from_secret: github_password
+    GIT_PASSWORD:
+      from_secret: git_password
+  when:
+    event:
+    - deployment
+    target:
+    - cs-qa
+    - wcs-qa
+
+- name: clone-kube-project
+  pull: if-not-exists
+  image: plugins/git
+  commands:
+  - git clone https://github.com/UKHomeOffice/kube-hocs-templates.git
+  when:
+    event:
+    - push
+    - tag
+    - deployment
+
+- name: deploy-to-cs-dev-from-build-number
+  pull: if-not-exists
+  image: quay.io/ukhomeofficedigital/kd:v1.16.0
+  commands:
+  - cd kube-hocs-templates
+  - ./deploy.sh
+  environment:
+    ENVIRONMENT: cs-dev
+    HOCS_TEMPLATES_CS_DEV:
+      from_secret: hocs_templates_cs_dev
+    KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
+    VERSION: build-${DRONE_BUILD_NUMBER}
+  when:
+    branch:
+    - master
+    event:
+    - push
+    - tag
+
+- name: deploy-to-wcs-dev-from-build-number
+  pull: if-not-exists
+  image: quay.io/ukhomeofficedigital/kd:v1.16.0
+  commands:
+  - cd kube-hocs-templates
+  - ./deploy.sh
+  environment:
+    ENVIRONMENT: wcs-dev
+    HOCS_TEMPLATES_WCS_DEV:
+      from_secret: hocs_templates_wcs_dev
+    KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
+    VERSION: build-${DRONE_BUILD_NUMBER}
+  when:
+    branch:
+    - master
+    event:
+    - push
+    - tag
+
+- name: deployment
+  pull: if-not-exists
+  image: quay.io/ukhomeofficedigital/kd:v1.16.0
+  commands:
+  - cd kube-hocs-templates
+  - ./deploy.sh
+  environment:
+    ENVIRONMENT: ${DRONE_DEPLOY_TO}
+    HOCS_TEMPLATES_CS_DEMO:
+      from_secret: hocs_templates_cs_demo
+    HOCS_TEMPLATES_CS_DEV:
+      from_secret: hocs_templates_cs_dev
+    HOCS_TEMPLATES_WCS_DEMO:
+      from_secret: hocs_templates_wcs_demo
+    HOCS_TEMPLATES_WCS_DEV:
+      from_secret: hocs_templates_wcs_dev
+    KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
+  when:
+    event:
+    - deployment
+    target:
+    - cs-dev
+    - cs-demo
+    - wcs-dev
+    - wcs-demo
+
+- name: deploy-to-cs-qa
+  pull: if-not-exists
+  image: quay.io/ukhomeofficedigital/kd:v1.16.0
+  commands:
+  - source version.txt
+  - echo $VERSION
+  - cd kube-hocs-templates
+  - ./deploy.sh
+  environment:
+    ENVIRONMENT: cs-qa
+    HOCS_TEMPLATES_CS_QA:
+      from_secret: hocs_templates_cs_qa
+    KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
+  when:
+    event:
+    - deployment
+    target:
+    - cs-qa
+
+- name: deploy-to-wcs-qa
+  pull: if-not-exists
+  image: quay.io/ukhomeofficedigital/kd:v1.16.0
+  commands:
+  - source version.txt
+  - echo $VERSION
+  - cd kube-hocs-templates
+  - ./deploy.sh
+  environment:
+    ENVIRONMENT: wcs-qa
+    HOCS_TEMPLATES_WCS_QA:
+      from_secret: hocs_templates_wcs_qa
+    KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
+  when:
+    event:
+    - deployment
+    target:
+    - wcs-qa
+
+- name: deploy-to-cs-prod
+  pull: if-not-exists
+  image: quay.io/ukhomeofficedigital/kd:v1.16.0
+  commands:
+  - cd kube-hocs-templates
+  - ./deploy.sh
+  environment:
+    ENVIRONMENT: cs-prod
+    HOCS_TEMPLATES_CS_PROD:
+      from_secret: hocs_templates_cs_prod
+    KUBE_SERVER: https://kube-api-prod.prod.acp.homeoffice.gov.uk
+  when:
+    event:
+    - deployment
+    target:
+    - cs-prod
+
+- name: deploy-to-wcs-prod
+  pull: if-not-exists
+  image: quay.io/ukhomeofficedigital/kd:v1.16.0
+  commands:
+  - cd kube-hocs-templates
+  - ./deploy.sh
+  environment:
+    ENVIRONMENT: wcs-prod
+    HOCS_TEMPLATES_WCS_PROD:
+      from_secret: hocs_templates_wcs_prod
+    KUBE_SERVER: https://kube-api-prod.prod.acp.homeoffice.gov.uk
+  when:
+    event:
+    - deployment
+    target:
+    - wcs-prod
+
+...
