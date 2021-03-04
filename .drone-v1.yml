@@ -49,18 +49,16 @@ steps:
 
 - name: docker-semver-tag
   pull: if-not-exists
-  image: quay.io/ukhomeofficedigital/hocs-version-bot:build-25
+  image: quay.io/ukhomeofficedigital/hocs-version-bot:latest
   commands:
-  - /app/hocs-deploy --version=$${SEMVER} --serviceGitToken=$${GIT_PASSWORD} --service=hocs-templates --gitToken=$${GITHUB_PASSWORD} --gitRepo="https://gitlab.digital.homeoffice.gov.uk/hocs/hocs-versions.git" --environment=qa --dockerRepository=quay.io/ukhomeofficedigital --sourceBuild=$${IMAGE_VERSION} --registryUser=ukhomeofficedigital+hocs --registryPassword=$${DOCKER_PASSWORD}
+    - /app/hocs-deploy --version=$${SEMVER} --serviceGitToken=$${GITHUB_TOKEN} --service=hocs-templates --versionRepoServiceToken=$${GITLAB_TOKEN} --versionRepo="https://gitlab.digital.homeoffice.gov.uk/hocs/hocs-versions.git" --environment=qa --dockerRepository=quay.io/ukhomeofficedigital --sourceBuild=$${IMAGE_VERSION} --registryUser=ukhomeofficedigital+hocs_quay_robot --registryPassword=$${DOCKER_PASSWORD}
   environment:
-    DOCKER_API_VERSION: 1.37
-    DOCKER_HOST: tcp://172.17.0.1:2375
     DOCKER_PASSWORD:
-      from_secret: docker_password
-    GITHUB_PASSWORD:
-      from_secret: github_password
-    GIT_PASSWORD:
-      from_secret: git_password
+      from_secret: QUAY_ROBOT_PASSWORD
+    GITLAB_TOKEN:
+      from_secret: GITLAB_TOKEN
+    GITHUB_TOKEN:
+      from_secret: GITHUB_TOKEN
   when:
     event:
     - promote
