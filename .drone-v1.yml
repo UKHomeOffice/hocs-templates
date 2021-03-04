@@ -28,34 +28,19 @@ steps:
     - pull_request
     - tag
 
-- name: docker-build
+- name: build-and-push-docker-image
   pull: if-not-exists
-  image: docker:17.09.1
-  commands:
-  - docker build -t hocs-templates .
+  image: plugins/docker
+  settings:
+    registry: quay.io
+    repo: quay.io/ukhomeofficedigital/hocs-templates
+    tags: 
+      - build-${DRONE_COMMIT_SHA}
+      - latest 
   environment:
-    DOCKER_HOST: tcp://172.17.0.1:2375
-  when:
-    branch:
-    - master
-    - refs/tags/*
-    event:
-    - push
-    - tag
-
-- name: install-docker-image
-  pull: if-not-exists
-  image: docker:17.09.1
-  commands:
-  - docker login -u="ukhomeofficedigital+hocs" -p=$${DOCKER_PASSWORD} quay.io
-  - docker tag hocs-templates quay.io/ukhomeofficedigital/hocs-templates:build-$${DRONE_BUILD_NUMBER}
-  - docker tag hocs-templates quay.io/ukhomeofficedigital/hocs-templates:latest
-  - docker push quay.io/ukhomeofficedigital/hocs-templates:build-$${DRONE_BUILD_NUMBER}
-  - docker push quay.io/ukhomeofficedigital/hocs-templates:latest
-  environment:
-    DOCKER_HOST: tcp://172.17.0.1:2375
     DOCKER_PASSWORD:
-      from_secret: docker_password
+      from_secret: QUAY_ROBOT_PASSWORD
+    DOCKER_USERNAME: ukhomeofficedigital+hocs_quay_robot
   when:
     branch:
     - master
