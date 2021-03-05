@@ -109,7 +109,7 @@ steps:
     - push
     - tag
 
-- name: deployment
+- name: deploy-to-notprod
   image: quay.io/ukhomeofficedigital/kd:v1.16.0
   commands:
   - cd kube-hocs-templates
@@ -134,7 +134,7 @@ steps:
     - wcs-dev
     - wcs-demo
 
-- name: deploy-to-hocs-qax
+- name: deploy-to-qa
   image: quay.io/ukhomeofficedigital/kd:v1.16.0
   commands:
   - source version.txt
@@ -142,51 +142,22 @@ steps:
   - cd kube-hocs-templates
   - ./deploy.sh
   environment:
-    ENVIRONMENT: hocs-qax
+    ENVIRONMENT: ${DRONE_DEPLOY_TO}
     HOCS_TEMPLATES_CS_QA:
+      from_secret: hocs_templates_cs_qa
+    HOCS_TEMPLATES_WCS_QA:
+      from_secret: hocs_templates_wcs_qa
+    HOCS_TEMPLATES_HOCS_QAX:
       from_secret: hocs_templates_qax
     KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
   when:
     event:
     - promote
     target:
-    - hocs-qax
-
-- name: deploy-to-cs-qa
-  image: quay.io/ukhomeofficedigital/kd:v1.16.0
-  commands:
-  - source version.txt
-  - echo $VERSION
-  - cd kube-hocs-templates
-  - ./deploy.sh
-  environment:
-    ENVIRONMENT: cs-qa
-    HOCS_TEMPLATES_CS_QA:
-      from_secret: hocs_templates_cs_qa
-    KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
-  when:
-    event:
-    - promote
-    target:
-    - cs-qa
-
-- name: deploy-to-wcs-qa
-  image: quay.io/ukhomeofficedigital/kd:v1.16.0
-  commands:
-  - source version.txt
-  - echo $VERSION
-  - cd kube-hocs-templates
-  - ./deploy.sh
-  environment:
-    ENVIRONMENT: wcs-qa
-    HOCS_TEMPLATES_WCS_QA:
-      from_secret: hocs_templates_wcs_qa
-    KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
-  when:
-    event:
-    - promote
-    target:
-    - wcs-qa
+      includes:
+        - cs-qa
+        - wcs-qa
+        - hocs-qax
 
 - name: deploy-to-cs-prod
   image: quay.io/ukhomeofficedigital/kd:v1.16.0
