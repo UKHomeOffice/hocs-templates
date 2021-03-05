@@ -48,7 +48,7 @@ steps:
     event:
     - push
 
-- name: build-and-push-docker-image
+- name: build-and-push-docker-image-latest
   image: plugins/docker
   settings:
     registry: quay.io
