@@ -1,6 +1,21 @@
 ---
 kind: pipeline
 type: kubernetes
+name: linter
+
+steps:
+- name: sonar-scanner
+  image: quay.io/ukhomeofficedigital/sonar-scanner:v3.0.3
+  when:
+    event:
+    - push
+    - pull_request
+    - tag
+
+---
+
+kind: pipeline
+type: kubernetes
 name: default
 
 environment:
@@ -15,14 +30,6 @@ steps:
   image: quay.io/ukhomeofficedigital/openjdk11:v11.0.5_10
   commands:
   - ./gradlew build
-  when:
-    event:
-    - push
-    - pull_request
-    - tag
-
-- name: sonar-scanner
-  image: quay.io/ukhomeofficedigital/sonar-scanner:v3.0.3
   when:
     event:
     - push
