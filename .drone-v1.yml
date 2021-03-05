@@ -9,7 +9,6 @@ platform:
 
 steps:
 - name: build-project
-  pull: if-not-exists
   image: quay.io/ukhomeofficedigital/openjdk11:v11.0.5_10
   commands:
   - ./gradlew build
@@ -20,7 +19,6 @@ steps:
     - tag
 
 - name: sonar-scanner
-  pull: if-not-exists
   image: quay.io/ukhomeofficedigital/sonar-scanner:v3.0.3
   when:
     event:
@@ -29,7 +27,6 @@ steps:
     - tag
 
 - name: build-and-push-docker-image
-  pull: if-not-exists
   image: plugins/docker
   settings:
     registry: quay.io
@@ -48,7 +45,6 @@ steps:
     - push
 
 - name: docker-semver-tag
-  pull: if-not-exists
   image: quay.io/ukhomeofficedigital/hocs-version-bot:latest
   commands:
     - /app/hocs-deploy --version=$${SEMVER} --serviceGitToken=$${GITHUB_TOKEN} --service=hocs-templates --versionRepoServiceToken=$${GITLAB_TOKEN} --versionRepo="https://gitlab.digital.homeoffice.gov.uk/hocs/hocs-versions.git" --environment=qa --dockerRepository=quay.io/ukhomeofficedigital --sourceBuild=$${IMAGE_VERSION} --registryUser=ukhomeofficedigital+hocs_quay_robot --registryPassword=$${DOCKER_PASSWORD}
@@ -68,7 +64,6 @@ steps:
     - hocs-qax
 
 - name: clone-kube-project
-  pull: if-not-exists
   image: plugins/git
   commands:
   - git clone https://github.com/UKHomeOffice/kube-hocs-templates.git
@@ -79,7 +74,6 @@ steps:
     - promote
 
 - name: deploy-to-cs-dev-from-build-number
-  pull: if-not-exists
   image: quay.io/ukhomeofficedigital/kd:v1.16.0
   commands:
   - cd kube-hocs-templates
@@ -98,7 +92,6 @@ steps:
     - tag
 
 - name: deploy-to-wcs-dev-from-build-number
-  pull: if-not-exists
   image: quay.io/ukhomeofficedigital/kd:v1.16.0
   commands:
   - cd kube-hocs-templates
@@ -117,7 +110,6 @@ steps:
     - tag
 
 - name: deployment
-  pull: if-not-exists
   image: quay.io/ukhomeofficedigital/kd:v1.16.0
   commands:
   - cd kube-hocs-templates
@@ -143,7 +135,6 @@ steps:
     - wcs-demo
 
 - name: deploy-to-hocs-qax
-  pull: if-not-exists
   image: quay.io/ukhomeofficedigital/kd:v1.16.0
   commands:
   - source version.txt
@@ -162,7 +153,6 @@ steps:
     - hocs-qax
 
 - name: deploy-to-cs-qa
-  pull: if-not-exists
   image: quay.io/ukhomeofficedigital/kd:v1.16.0
   commands:
   - source version.txt
@@ -181,7 +171,6 @@ steps:
     - cs-qa
 
 - name: deploy-to-wcs-qa
-  pull: if-not-exists
   image: quay.io/ukhomeofficedigital/kd:v1.16.0
   commands:
   - source version.txt
@@ -200,7 +189,6 @@ steps:
     - wcs-qa
 
 - name: deploy-to-cs-prod
-  pull: if-not-exists
   image: quay.io/ukhomeofficedigital/kd:v1.16.0
   commands:
   - cd kube-hocs-templates
@@ -217,7 +205,6 @@ steps:
     - cs-prod
 
 - name: deploy-to-wcs-prod
-  pull: if-not-exists
   image: quay.io/ukhomeofficedigital/kd:v1.16.0
   commands:
   - cd kube-hocs-templates
@@ -234,3 +221,4 @@ steps:
     - wcs-prod
 
 ...
+
