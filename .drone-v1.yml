@@ -3,10 +3,6 @@ kind: pipeline
 type: kubernetes
 name: default
 
-platform:
-  os: linux
-  arch: amd64
-
 steps:
 - name: build-project
   image: quay.io/ukhomeofficedigital/openjdk11:v11.0.5_10
