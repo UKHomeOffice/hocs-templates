@@ -1,7 +1,7 @@
 ---
 kind: pipeline
 type: kubernetes
-name: default
+name: build
 
 steps:
 - name: build-project
@@ -61,6 +61,14 @@ steps:
     event:
     - push
 
+---
+kind: pipeline
+type: kubernetes
+name: deploy
+depends_on:
+  - build
+
+steps:
 - name: docker-semver-tag
   image: quay.io/ukhomeofficedigital/hocs-version-bot:latest
   commands:
@@ -118,6 +126,8 @@ steps:
     event:
     - push
     - tag
+  depends_on:
+    - clone-kube-project
 
 - name: deploy-to-wcs-dev-from-build-number
   image: quay.io/ukhomeofficedigital/kd:v1.16.0
@@ -136,6 +146,8 @@ steps:
     event:
     - push
     - tag
+  depends_on:
+    - clone-kube-project
 
 - name: deploy-to-notprod
   image: quay.io/ukhomeofficedigital/kd:v1.16.0
@@ -161,6 +173,8 @@ steps:
     - cs-demo
     - wcs-dev
     - wcs-demo
+  depends_on:
+    - clone-kube-project
 
 - name: deploy-to-qa
   image: quay.io/ukhomeofficedigital/kd:v1.16.0
@@ -186,6 +200,9 @@ steps:
         - cs-qa
         - wcs-qa
         - hocs-qax
+  depends_on:
+    - clone-kube-project
+    - docker-semver-tag
 
 - name: deploy-to-cs-prod
   image: quay.io/ukhomeofficedigital/kd:v1.16.0
@@ -202,6 +219,8 @@ steps:
     - promote
     target:
     - cs-prod
+  depends_on:
+    - clone-kube-project
 
 - name: deploy-to-wcs-prod
   image: quay.io/ukhomeofficedigital/kd:v1.16.0
@@ -218,6 +237,8 @@ steps:
     - promote
     target:
     - wcs-prod
+  depends_on:
+    - clone-kube-project
 
 ...
 
