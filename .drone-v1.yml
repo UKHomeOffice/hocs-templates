@@ -3,9 +3,6 @@ kind: pipeline
 type: kubernetes
 name: default
 
-environment:
-  SERVICE: ${SERVICE}
-
 platform:
   os: linux
   arch: amd64
@@ -33,7 +30,7 @@ steps:
   image: plugins/docker
   settings:
     registry: quay.io
-    repo: quay.io/ukhomeofficedigital/${SERVICE}
+    repo: quay.io/ukhomeofficedigital/hocs-templates
     tags:
       - build-${DRONE_BUILD_NUMBER}
       - ${DRONE_COMMIT_SHA}
@@ -55,7 +52,7 @@ steps:
   image: plugins/docker
   settings:
     registry: quay.io
-    repo: quay.io/ukhomeofficedigital/${SERVICE}
+    repo: quay.io/ukhomeofficedigital/hocs-templates
     tags:
       - master
   environment:
@@ -101,7 +98,7 @@ steps:
 - name: clone-kube-project
   image: plugins/git
   commands:
-  - git clone https://github.com/UKHomeOffice/kube-${SERVICE}.git
+  - git clone https://github.com/UKHomeOffice/kube-hocs-templates.git
   when:
     event:
     - push
@@ -111,7 +108,7 @@ steps:
 - name: deploy-to-cs-dev-from-build-number
   image: quay.io/ukhomeofficedigital/kd:v1.16.0
   commands:
-  - cd kube-${SERVICE}
+  - cd kube-hocs-templates
   - ./deploy.sh
   environment:
     ENVIRONMENT: cs-dev
@@ -129,7 +126,7 @@ steps:
 - name: deploy-to-wcs-dev-from-build-number
   image: quay.io/ukhomeofficedigital/kd:v1.16.0
   commands:
-  - cd kube-${SERVICE}
+  - cd kube-hocs-templates
   - ./deploy.sh
   environment:
     ENVIRONMENT: wcs-dev
@@ -147,7 +144,7 @@ steps:
 - name: deploy-to-notprod
   image: quay.io/ukhomeofficedigital/kd:v1.16.0
   commands:
-  - cd kube-${SERVICE}
+  - cd kube-hocs-templates
   - ./deploy.sh
   environment:
     ENVIRONMENT: ${DRONE_DEPLOY_TO}
@@ -174,7 +171,7 @@ steps:
   commands:
   - source version.txt
   - echo $VERSION
-  - cd kube-${SERVICE}
+  - cd kube-hocs-templates
   - ./deploy.sh
   environment:
     ENVIRONMENT: ${DRONE_DEPLOY_TO}
@@ -197,7 +194,7 @@ steps:
 - name: deploy-to-cs-prod
   image: quay.io/ukhomeofficedigital/kd:v1.16.0
   commands:
-  - cd kube-${SERVICE}
+  - cd kube-hocs-templates
   - ./deploy.sh
   environment:
     ENVIRONMENT: cs-prod
@@ -213,7 +210,7 @@ steps:
 - name: deploy-to-wcs-prod
   image: quay.io/ukhomeofficedigital/kd:v1.16.0
   commands:
-  - cd kube-${SERVICE}
+  - cd kube-hocs-templates
   - ./deploy.sh
   environment:
     ENVIRONMENT: wcs-prod
