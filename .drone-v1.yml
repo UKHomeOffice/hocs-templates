@@ -68,7 +68,18 @@ steps:
 - name: docker-semver-tag
   image: quay.io/ukhomeofficedigital/hocs-version-bot:latest
   commands:
-    - /app/hocs-deploy --version=$${SEMVER} --serviceGitToken=$${GITHUB_TOKEN} --service=hocs-templates --versionRepoServiceToken=$${GITLAB_TOKEN} --versionRepo="https://gitlab.digital.homeoffice.gov.uk/hocs/hocs-versions.git" --environment=qa --dockerRepository=quay.io/ukhomeofficedigital --sourceBuild=$${IMAGE_VERSION} --registryUser=ukhomeofficedigital+hocs_quay_robot --registryPassword=$${DOCKER_PASSWORD}
+    - >
+      /app/hocs-deploy
+      --dockerRepository=quay.io/ukhomeofficedigital
+      --environment=qa
+      --registryPassword=$${DOCKER_PASSWORD}
+      --registryUser=ukhomeofficedigital+hocs_quay_robot
+      --service=${SERVICE}
+      --serviceGitToken=$${GITHUB_TOKEN}
+      --sourceBuild=$${IMAGE_VERSION}
+      --version=$${SEMVER}
+      --versionRepo="https://gitlab.digital.homeoffice.gov.uk/hocs/hocs-versions.git"
+      --versionRepoServiceToken=$${GITLAB_TOKEN}
   environment:
     DOCKER_PASSWORD:
       from_secret: QUAY_ROBOT_PASSWORD
