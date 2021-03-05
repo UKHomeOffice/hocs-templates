@@ -32,7 +32,8 @@ steps:
     registry: quay.io
     repo: quay.io/ukhomeofficedigital/hocs-templates
     tags:
-      - build-${DRONE_COMMIT_SHA}
+      - build-${DRONE_BUILD_NUMBER}
+      - ${DRONE_COMMIT_SHA}
       - branch-${DRONE_COMMIT_BRANCH/\//_/}
   environment:
     DOCKER_PASSWORD:
