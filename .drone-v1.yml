@@ -109,9 +109,9 @@ steps:
     VERSION: build-${DRONE_BUILD_NUMBER}
   when:
     branch:
-    - master
+      - master
     event:
-    - push
+      - push
   depends_on:
     - clone-kube-project
 
@@ -226,9 +226,9 @@ steps:
     KUBE_SERVER: https://kube-api-prod.prod.acp.homeoffice.gov.uk
   when:
     event:
-    - promote
+      - promote
     target:
-    - wcs-prod
+      - wcs-prod
   depends_on:
     - clone-kube-project
 
