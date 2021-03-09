@@ -60,6 +60,10 @@ steps:
     event:
       - push
 
+trigger:
+  event:
+    - push
+
 ---
 
 kind: pipeline
@@ -76,6 +80,9 @@ steps:
   when:
     event:
       - promote
+      - push
+    branch:
+      - master
 
 - name: deploy-to-cs-dev-from-build-number
   image: quay.io/ukhomeofficedigital/kd:v1.16.0
@@ -231,5 +238,15 @@ steps:
       - wcs-prod
   depends_on:
     - clone-kube-project
+
+trigger: 
+  event: 
+    - promote
+
+trigger: 
+  event:
+    - push
+  branch:
+    - master
 
 ...
