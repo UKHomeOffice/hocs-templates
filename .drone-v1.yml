@@ -215,11 +215,10 @@ steps:
     event:
       - promote
     target:
-      - cs-dev
-      - wcs-dev
-      - cs-demo
-      - wcs-demo
-      - hocs-qax
+      exclude:
+        - release
+        - cs-prod
+        - wcs-prod
   depends_on:
     - clone-kube-project
 
