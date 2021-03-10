@@ -1,26 +1,27 @@
 ---
+
 kind: pipeline
 type: kubernetes
 name: build
 
 steps:
-- name: build-project
+- name: build project
   image: quay.io/ukhomeofficedigital/openjdk11:v11.0.5_10
   commands:
   - ./gradlew build
   when:
     event:
       - push
-      - pull_request
 
-- name: sonar-scanner
+- name: sonar scanner
   image: quay.io/ukhomeofficedigital/sonar-scanner:v3.0.3
   when:
     event:
       - push
-      - pull_request
+  depends-on:
+    - build project
 
-- name: build-and-push-docker-image
+- name: build & push
   image: plugins/docker
   settings:
     registry: quay.io
@@ -34,14 +35,12 @@ steps:
       from_secret: QUAY_ROBOT_PASSWORD
     DOCKER_USERNAME: ukhomeofficedigital+hocs_quay_robot
   when:
-    branch:
-      - epic/*
-      - hotfix/*
-      - master
     event:
       - push
+  depends-on:
+    - build project
 
-- name: build-and-push-docker-image-latest
+- name: build & push latest
   image: plugins/docker
   settings:
     registry: quay.io
@@ -57,11 +56,12 @@ steps:
       - master
     event:
       - push
+  depends-on:
+    - build project
 
 trigger:
   event:
     - push
-    - pull_request
 
 ---
 
@@ -72,7 +72,7 @@ depends_on:
   - build
 
 steps:
-- name: clone-kube-project
+- name: clone kube repo
   image: plugins/git
   commands:
     - git clone https://github.com/UKHomeOffice/kube-hocs-templates.git
@@ -81,7 +81,7 @@ steps:
       - push
       - promote
 
-- name: deploy-to-cs-dev-from-build-number
+- name: deploy to cs-dev
   image: quay.io/ukhomeofficedigital/kd:v1.16.0
   commands:
     - cd kube-hocs-templates
@@ -98,9 +98,9 @@ steps:
     event:
       - push
   depends_on:
-    - clone-kube-project
+    - clone kube repo
 
-- name: deploy-to-wcs-dev-from-build-number
+- name: deploy to wcs-dev
   image: quay.io/ukhomeofficedigital/kd:v1.16.0
   commands:
     - cd kube-hocs-templates
@@ -117,9 +117,9 @@ steps:
     event:
       - push
   depends_on:
-    - clone-kube-project
+    - clone kube repo
 
-- name: docker-semver-tag
+- name: generate & tag build
   image: quay.io/ukhomeofficedigital/hocs-version-bot:latest
   commands:
     - >
@@ -147,7 +147,7 @@ steps:
     target:
       - release
 
-- name: deploy-to-cs-qa
+- name: deploy to cs-qa
   image: quay.io/ukhomeofficedigital/kd:v1.16.0
   commands:
     - source version.txt
@@ -158,8 +158,6 @@ steps:
     ENVIRONMENT: cs-qa
     HOCS_TEMPLATES_CS_QA:
       from_secret: hocs_templates_cs_qa
-    HOCS_TEMPLATES_WCS_QA:
-      from_secret: hocs_templates_wcs_qa
     KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
   when:
     event:
@@ -167,10 +165,10 @@ steps:
     target:
       - release
   depends_on:
-    - clone-kube-project
-    - docker-semver-tag
+    - clone kube repo
+    - generate & tag build
 
-- name: deploy-to-wcs-qa
+- name: deploy to wcs-qa
   image: quay.io/ukhomeofficedigital/kd:v1.16.0
   commands:
     - source version.txt
@@ -179,8 +177,6 @@ steps:
     - ./deploy.sh
   environment:
     ENVIRONMENT: wcs-qa
-    HOCS_TEMPLATES_CS_QA:
-      from_secret: hocs_templates_cs_qa
     HOCS_TEMPLATES_WCS_QA:
       from_secret: hocs_templates_wcs_qa
     KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
@@ -190,10 +186,10 @@ steps:
     target:
       - release
   depends_on:
-    - clone-kube-project
-    - docker-semver-tag
+    - clone kube repo
+    - generate & tag build
 
-- name: deploy-to-notprod
+- name: deploy to not prod 
   image: quay.io/ukhomeofficedigital/kd:v1.16.0
   commands:
     - cd kube-hocs-templates
@@ -220,9 +216,9 @@ steps:
         - cs-prod
         - wcs-prod
   depends_on:
-    - clone-kube-project
+    - clone kube repo
 
-- name: deploy-to-prod
+- name: deploy to prod
   image: quay.io/ukhomeofficedigital/kd:v1.16.0
   commands:
     - cd kube-hocs-templates
@@ -241,7 +237,7 @@ steps:
       - cs-prod
       - wcs-prod
   depends_on:
-    - clone-kube-project
+    - clone kube repo
 
 trigger: 
   event: 
