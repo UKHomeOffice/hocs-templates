@@ -61,6 +61,7 @@ steps:
 trigger:
   event:
     - push
+    - pull_request
 
 ---
 
@@ -133,8 +134,6 @@ steps:
       --version=$${SEMVER}
       --versionRepo="https://gitlab.digital.homeoffice.gov.uk/hocs/hocs-versions.git"
       --versionRepoServiceToken=$${GITLAB_TOKEN}
-    - source version.txt
-    - echo $VERSION
   environment:
     DOCKER_PASSWORD:
       from_secret: QUAY_ROBOT_PASSWORD
@@ -147,6 +146,52 @@ steps:
       - promote
     target:
       - release
+
+- name: deploy-to-cs-qa
+  image: quay.io/ukhomeofficedigital/kd:v1.16.0
+  commands:
+    - source version.txt
+    - echo $VERSION
+    - cd kube-hocs-templates
+    - ./deploy.sh
+  environment:
+    ENVIRONMENT: cs-qa
+    HOCS_TEMPLATES_CS_QA:
+      from_secret: hocs_templates_cs_qa
+    HOCS_TEMPLATES_WCS_QA:
+      from_secret: hocs_templates_wcs_qa
+    KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
+  when:
+    event:
+      - promote
+    target:
+      - release
+  depends_on:
+    - clone-kube-project
+    - docker-semver-tag
+
+- name: deploy-to-wcs-qa
+  image: quay.io/ukhomeofficedigital/kd:v1.16.0
+  commands:
+    - source version.txt
+    - echo $VERSION
+    - cd kube-hocs-templates
+    - ./deploy.sh
+  environment:
+    ENVIRONMENT: wcs-qa
+    HOCS_TEMPLATES_CS_QA:
+      from_secret: hocs_templates_cs_qa
+    HOCS_TEMPLATES_WCS_QA:
+      from_secret: hocs_templates_wcs_qa
+    KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
+  when:
+    event:
+      - promote
+    target:
+      - release
+  depends_on:
+    - clone-kube-project
+    - docker-semver-tag
 
 - name: deploy-to-notprod
   image: quay.io/ukhomeofficedigital/kd:v1.16.0
@@ -178,52 +223,15 @@ steps:
   depends_on:
     - clone-kube-project
 
-- name: deploy-to-qa
+- name: deploy-to-prod
   image: quay.io/ukhomeofficedigital/kd:v1.16.0
   commands:
     - cd kube-hocs-templates
     - ./deploy.sh
   environment:
     ENVIRONMENT: ${DRONE_DEPLOY_TO}
-    HOCS_TEMPLATES_CS_QA:
-      from_secret: hocs_templates_cs_qa
-    HOCS_TEMPLATES_WCS_QA:
-      from_secret: hocs_templates_wcs_qa
-    KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
-  when:
-    event:
-      - promote
-    target:
-      - release
-  depends_on:
-    - clone-kube-project
-    - docker-semver-tag
-
-- name: deploy-to-cs-prod
-  image: quay.io/ukhomeofficedigital/kd:v1.16.0
-  commands:
-    - cd kube-hocs-templates
-    - ./deploy.sh
-  environment:
-    ENVIRONMENT: cs-prod
     HOCS_TEMPLATES_CS_PROD:
       from_secret: hocs_templates_cs_prod
-    KUBE_SERVER: https://kube-api-prod.prod.acp.homeoffice.gov.uk
-  when:
-    event:
-    - promote
-    target:
-    - cs-prod
-  depends_on:
-    - clone-kube-project
-
-- name: deploy-to-wcs-prod
-  image: quay.io/ukhomeofficedigital/kd:v1.16.0
-  commands:
-    - cd kube-hocs-templates
-    - ./deploy.sh
-  environment:
-    ENVIRONMENT: wcs-prod
     HOCS_TEMPLATES_WCS_PROD:
       from_secret: hocs_templates_wcs_prod
     KUBE_SERVER: https://kube-api-prod.prod.acp.homeoffice.gov.uk
@@ -231,6 +239,7 @@ steps:
     event:
       - promote
     target:
+      - cs-prod
       - wcs-prod
   depends_on:
     - clone-kube-project
