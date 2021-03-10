@@ -18,7 +18,7 @@ steps:
   when:
     event:
       - push
-  depends-on:
+  depends_on:
     - build project
 
 - name: build & push
@@ -37,7 +37,7 @@ steps:
   when:
     event:
       - push
-  depends-on:
+  depends_on:
     - build project
 
 - name: build & push latest
@@ -56,7 +56,7 @@ steps:
       - master
     event:
       - push
-  depends-on:
+  depends_on:
     - build project
 
 trigger:
