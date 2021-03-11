@@ -156,8 +156,8 @@ steps:
     - ./deploy.sh
   environment:
     ENVIRONMENT: cs-qa
-    HOCS_TEMPLATES_CS_QA:
-      from_secret: hocs_templates_cs_qa
+    KUBE_TOKEN:
+      from_secret: kube_token_notprod
     KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
   when:
     event:
@@ -177,8 +177,8 @@ steps:
     - ./deploy.sh
   environment:
     ENVIRONMENT: wcs-qa
-    HOCS_TEMPLATES_WCS_QA:
-      from_secret: hocs_templates_wcs_qa
+    KUBE_TOKEN:
+      from_secret: kube_token_notprod_wcs
     KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
   when:
     event:
@@ -189,23 +189,15 @@ steps:
     - clone kube repo
     - generate & tag build
 
-- name: deploy to not prod 
+- name: deploy to notprod
   image: quay.io/ukhomeofficedigital/kd:v1.16.0
   commands:
     - cd kube-hocs-templates
     - ./deploy.sh
   environment:
     ENVIRONMENT: ${DRONE_DEPLOY_TO}
-    HOCS_TEMPLATES_CS_DEV:
-      from_secret: hocs_templates_cs_dev
-    HOCS_TEMPLATES_WCS_DEV:
-      from_secret: hocs_templates_wcs_dev
-    HOCS_TEMPLATES_CS_DEMO:
-      from_secret: hocs_templates_cs_demo
-    HOCS_TEMPLATES_WCS_DEMO:
-      from_secret: hocs_templates_wcs_demo
-    HOCS_TEMPLATES_HOCS_QAX:
-      from_secret: hocs_templates_qax
+    KUBE_TOKEN:
+      from_secret: kube_token_notprod
     KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
   when:
     event:
@@ -213,8 +205,29 @@ steps:
     target:
       exclude:
         - release
-        - cs-prod
-        - wcs-prod
+        - "*-prod"
+        - "wcs-*"
+  depends_on:
+    - clone kube repo
+
+- name: deploy to WCS notprod
+  image: quay.io/ukhomeofficedigital/kd:v1.16.0
+  commands:
+    - cd kube-hocs-templates
+    - ./deploy.sh
+  environment:
+    ENVIRONMENT: ${DRONE_DEPLOY_TO}
+    KUBE_TOKEN:
+      from_secret: kube_token_notprod_wcs
+    KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
+  when:
+    event:
+      - promote
+    target:
+      include:
+        - "wcs-*"
+      exclude:
+        - "*-prod"
   depends_on:
     - clone kube repo
 
@@ -225,10 +238,8 @@ steps:
     - ./deploy.sh
   environment:
     ENVIRONMENT: ${DRONE_DEPLOY_TO}
-    HOCS_TEMPLATES_CS_PROD:
-      from_secret: hocs_templates_cs_prod
-    HOCS_TEMPLATES_WCS_PROD:
-      from_secret: hocs_templates_wcs_prod
+    KUBE_TOKEN:
+      from_secret: kube_token_${DRONE_DEPLOY_TO/-/_}
     KUBE_SERVER: https://kube-api-prod.prod.acp.homeoffice.gov.uk
   when:
     event:
