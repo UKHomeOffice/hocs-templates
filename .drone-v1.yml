@@ -239,11 +239,11 @@ steps:
   depends_on:
     - clone kube repo
 
-trigger: 
-  event: 
+trigger:
+  event:
     - promote
 
-trigger: 
+trigger:
   event:
     - push
   branch:
