@@ -247,6 +247,8 @@ trigger:
   event:
     - push
   branch:
-    - master
+    include:
+      - master
+      - epic/*
 
 ...
