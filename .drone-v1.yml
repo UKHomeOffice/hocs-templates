@@ -88,7 +88,7 @@ steps:
     - ./deploy.sh
   environment:
     ENVIRONMENT: cs-dev
-    HOCS_TEMPLATES_CS_DEV:
+    KUBE_TOKEN:
       from_secret: hocs_templates_cs_dev
     KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
     VERSION: build-${DRONE_BUILD_NUMBER}
@@ -107,7 +107,7 @@ steps:
     - ./deploy.sh
   environment:
     ENVIRONMENT: wcs-dev
-    HOCS_TEMPLATES_WCS_DEV:
+    KUBE_TOKEN:
       from_secret: hocs_templates_wcs_dev
     KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
     VERSION: build-${DRONE_BUILD_NUMBER}
@@ -156,7 +156,7 @@ steps:
     - ./deploy.sh
   environment:
     ENVIRONMENT: cs-qa
-    HOCS_TEMPLATES_CS_QA:
+    KUBE_TOKEN:
       from_secret: hocs_templates_cs_qa
     KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
   when:
@@ -177,7 +177,7 @@ steps:
     - ./deploy.sh
   environment:
     ENVIRONMENT: wcs-qa
-    HOCS_TEMPLATES_WCS_QA:
+    KUBE_TOKEN:
       from_secret: hocs_templates_wcs_qa
     KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
   when:
@@ -196,16 +196,8 @@ steps:
     - ./deploy.sh
   environment:
     ENVIRONMENT: ${DRONE_DEPLOY_TO}
-    HOCS_TEMPLATES_CS_DEV:
-      from_secret: hocs_templates_cs_dev
-    HOCS_TEMPLATES_WCS_DEV:
-      from_secret: hocs_templates_wcs_dev
-    HOCS_TEMPLATES_CS_DEMO:
-      from_secret: hocs_templates_cs_demo
-    HOCS_TEMPLATES_WCS_DEMO:
-      from_secret: hocs_templates_wcs_demo
-    HOCS_TEMPLATES_HOCS_QAX:
-      from_secret: hocs_templates_qax
+    KUBE_TOKEN:
+      from_secret: hocs_templates_${DRONE_DEPLOY_TO/-/_}
     KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
   when:
     event:
@@ -225,10 +217,8 @@ steps:
     - ./deploy.sh
   environment:
     ENVIRONMENT: ${DRONE_DEPLOY_TO}
-    HOCS_TEMPLATES_CS_PROD:
-      from_secret: hocs_templates_cs_prod
-    HOCS_TEMPLATES_WCS_PROD:
-      from_secret: hocs_templates_wcs_prod
+    KUBE_TOKEN:
+      from_secret: hocs_templates_${DRONE_DEPLOY_TO/-/_}
     KUBE_SERVER: https://kube-api-prod.prod.acp.homeoffice.gov.uk
   when:
     event:
