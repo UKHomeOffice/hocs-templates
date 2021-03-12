@@ -117,7 +117,7 @@ steps:
       --environment=qa
       --registryPassword=$${DOCKER_PASSWORD}
       --registryUser=ukhomeofficedigital+hocs_quay_robot
-      --service=${SERVICE}
+      --service=hocs-templates
       --serviceGitToken=$${GITHUB_TOKEN}
       --sourceBuild=$${IMAGE_VERSION}
       --version=$${SEMVER}
