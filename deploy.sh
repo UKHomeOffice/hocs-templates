@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 export KUBE_NAMESPACE=${ENVIRONMENT}
 export KUBE_SERVER=${KUBE_SERVER}
