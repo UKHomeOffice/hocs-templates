@@ -91,7 +91,7 @@ steps:
     KUBE_TOKEN:
       from_secret: hocs_templates_cs_dev
     KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
-    VERSION: build-${DRONE_BUILD_NUMBER}
+    VERSION: build_${DRONE_BUILD_NUMBER}
   when:
     branch:
       - master
@@ -110,7 +110,7 @@ steps:
     KUBE_TOKEN:
       from_secret: hocs_templates_wcs_dev
     KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
-    VERSION: build-${DRONE_BUILD_NUMBER}
+    VERSION: build_${DRONE_BUILD_NUMBER}
   when:
     branch:
       - master
