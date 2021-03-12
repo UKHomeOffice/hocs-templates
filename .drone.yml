@@ -229,16 +229,4 @@ steps:
   depends_on:
     - clone kube repo
 
-trigger:
-  event:
-    - promote
-
-trigger:
-  event:
-    - push
-  branch:
-    include:
-      - master
-      - epic/*
-
 ...
