@@ -59,6 +59,17 @@ type: kubernetes
 name: deploy
 depends_on:
   - build
+trigger:
+  exclude:
+    - pull_request
+    - tag
+
+services:
+  - name: docker
+    image: 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind
+
+environment:
+  DOCKER_HOST: tcp://docker:2375
 
 steps:
 - name: clone kube repo
@@ -108,6 +119,16 @@ steps:
   depends_on:
     - clone kube repo
 
+- name: wait for docker
+  image: docker
+  commands:
+    - n=0; until docker stats --no-stream; do echo "Waiting for Docker $n"; n=$((n +1)); sleep 1; done
+  when:
+    event:
+      - promote
+    target:
+      - release
+
 - name: generate & tag build
   image: quay.io/ukhomeofficedigital/hocs-version-bot:latest
   commands:
@@ -124,12 +145,15 @@ steps:
       --versionRepo="https://gitlab.digital.homeoffice.gov.uk/hocs/hocs-versions.git"
       --versionRepoServiceToken=$${GITLAB_TOKEN}
   environment:
+    DOCKER_API_VERSION: 1.40
     DOCKER_PASSWORD:
       from_secret: QUAY_ROBOT_PASSWORD
     GITLAB_TOKEN:
       from_secret: GITLAB_TOKEN
     GITHUB_TOKEN:
       from_secret: GITHUB_TOKEN
+  depends_on:
+    - wait for docker
   when:
     event:
       - promote
