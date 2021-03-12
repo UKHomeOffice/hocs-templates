@@ -9,15 +9,9 @@ steps:
   image: quay.io/ukhomeofficedigital/openjdk11:v11.0.5_10
   commands:
   - ./gradlew build
-  when:
-    event:
-      - push
 
 - name: sonar scanner
   image: quay.io/ukhomeofficedigital/sonar-scanner:v3.0.3
-  when:
-    event:
-      - push
   depends_on:
     - build project
 
@@ -34,9 +28,6 @@ steps:
     DOCKER_PASSWORD:
       from_secret: QUAY_ROBOT_PASSWORD
     DOCKER_USERNAME: ukhomeofficedigital+hocs_quay_robot
-  when:
-    event:
-      - push
   depends_on:
     - build project
 
@@ -54,8 +45,6 @@ steps:
   when:
     branch:
       - master
-    event:
-      - push
   depends_on:
     - build project
 
