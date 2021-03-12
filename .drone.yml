@@ -60,9 +60,10 @@ name: deploy
 depends_on:
   - build
 trigger:
-  exclude:
-    - pull_request
-    - tag
+  event:
+    exclude:
+      - pull_request
+      - tag
 
 services:
   - name: docker
