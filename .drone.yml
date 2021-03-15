@@ -219,8 +219,7 @@ steps:
     target:
       exclude:
         - release
-        - cs-prod
-        - wcs-prod
+        - "*-prod"
   depends_on:
     - clone kube repo
 
