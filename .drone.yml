@@ -26,7 +26,7 @@ steps:
       - branch-${DRONE_COMMIT_BRANCH/\//_}
   environment:
     DOCKER_PASSWORD:
-      from_secret: QUAY_ROBOT_PASSWORD
+      from_secret: QUAY_ROBOT_TOKEN
     DOCKER_USERNAME: ukhomeofficedigital+hocs_quay_robot
   depends_on:
     - build project
@@ -40,7 +40,7 @@ steps:
       - latest
   environment:
     DOCKER_PASSWORD:
-      from_secret: QUAY_ROBOT_PASSWORD
+      from_secret: QUAY_ROBOT_TOKEN
     DOCKER_USERNAME: ukhomeofficedigital+hocs_quay_robot
   when:
     branch:
@@ -148,7 +148,7 @@ steps:
   environment:
     DOCKER_API_VERSION: 1.40
     DOCKER_PASSWORD:
-      from_secret: QUAY_ROBOT_PASSWORD
+      from_secret: QUAY_ROBOT_TOKEN
     GITLAB_TOKEN:
       from_secret: GITLAB_TOKEN
     GITHUB_TOKEN:
