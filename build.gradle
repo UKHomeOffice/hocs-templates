@@ -51,3 +51,7 @@ dependencies {
 	testImplementation('junit:junit:4.12')
 	testImplementation('com.github.tomakehurst:wiremock-standalone:2.18.0')
 }
+
+jar {
+	enabled = false
+}
