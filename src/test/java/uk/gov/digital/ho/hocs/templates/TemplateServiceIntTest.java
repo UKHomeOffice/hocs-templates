@@ -100,7 +100,7 @@ public class TemplateServiceIntTest {
     @Test
     public void shouldReturnPopulatedTemplate() throws Exception {
         ResponseEntity<byte[]> result = testRestTemplate.exchange(
-                getBasePath() + "case/" + CASE_UUID + "/template/" + TEMPLATE_UUID, GET, new HttpEntity(createValidAuthHeaders()), byte[].class);
+                getBasePath() + "/case/" + CASE_UUID + "/template/" + TEMPLATE_UUID, GET, new HttpEntity(createValidAuthHeaders()), byte[].class);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
 
