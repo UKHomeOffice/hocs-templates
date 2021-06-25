@@ -14,7 +14,7 @@ spec:
       name: hocs-templates
   strategy:
     rollingUpdate:
-      maxUnavailable: 0
+      minAvailable: 1
       maxSurge: 2
     type: RollingUpdate
   template:
