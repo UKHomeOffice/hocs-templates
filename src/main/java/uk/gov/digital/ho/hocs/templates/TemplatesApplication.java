@@ -18,7 +18,7 @@ public class TemplatesApplication {
 
 	@PreDestroy
 	public void stop() {
-		log.info("hocs-templates stopping gracefully");
+		log.info("Stopping gracefully");
 	}
 
 }
