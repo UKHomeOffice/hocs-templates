@@ -99,9 +99,12 @@ public class TemplateService {
     }
 
     private String formatDate(String unformattedDate) {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy");
-        LocalDate date = LocalDate.parse(unformattedDate);
-        return date.format(dateTimeFormatter);
+        if(unformattedDate != null){
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy");
+            LocalDate date = LocalDate.parse(unformattedDate);
+            return date.format(dateTimeFormatter);
+        }
+        return "";
     }
 
     private InputStream getTemplateAsInputStream(UUID templateUUID) {
