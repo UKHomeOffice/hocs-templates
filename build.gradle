@@ -1,59 +1,49 @@
 plugins {
-	id 'org.springframework.boot' version '2.5.1'
 	id 'java'
+	id 'org.springframework.boot' version '2.5.6'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 }
-
-apply plugin: 'java'
-apply plugin: 'idea'
-apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
-apply plugin: 'jacoco'
 
 group = 'uk.gov.digital.ho.hocs'
-version = '0.0.1'
+version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
-targetCompatibility = '11'
-
-task copyLombok(type: Copy) {
-	outputs.upToDateWhen { false }
-	into "${buildDir}/libs"
-	include "lombok*.jar"
-	from configurations.compileClasspath
-}
-
-build.dependsOn(copyLombok)
 
 repositories {
 	mavenCentral()
 }
 
 dependencies {
-	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.5'
+	implementation('org.springframework.boot:spring-boot-starter-web:2.5.6') {
+		exclude(module: 'spring-boot-starter-tomcat')
+	}
 
-	implementation('org.springframework.boot:spring-boot-starter-web')
-	implementation('org.springframework.retry:spring-retry')
-	implementation('org.springframework.boot:spring-boot-starter-actuator')
-	implementation("org.apache.camel:camel-spring-boot-starter:2.23.0")
+	implementation 'org.springframework.boot:spring-boot-starter-undertow:2.5.6'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator:2.5.6'
+
+	implementation 'net.logstash.logback:logstash-logback-encoder:6.6'
+	implementation 'org.apache.commons:commons-text:1.9'
+
 	implementation('javax:javaee-api:8.0.1')
 	implementation ('org.docx4j:docx4j:6.1.2'){
 		exclude group: "org.slf4j", module: "slf4j-log4j12"
 	}
 	implementation('com.googlecode.jaxb-namespaceprefixmapper-interfaces:JAXBNamespacePrefixMapper:6.1.0')
-	implementation('javax.xml.bind:jaxb-api:2.4.0-b180830.0359')
-	implementation('com.sun.xml.bind:jaxb-impl:2.3.2')
-	implementation('org.glassfish.jaxb:jaxb-runtime:2.3.2')
-	implementation('org.glassfish.jersey.core:jersey-common:2.28')
+	implementation 'jakarta.xml.bind:jakarta.xml.bind-api:2.3.3'
+	implementation 'com.sun.xml.bind:jaxb-impl:2.3.5'
+	implementation 'org.glassfish.jersey.core:jersey-common:2.35'
 
-	compileOnly('org.projectlombok:lombok')
-	annotationProcessor('org.projectlombok:lombok')
+	compileOnly 'org.projectlombok:lombok:1.18.22'
+	annotationProcessor 'org.projectlombok:lombok:1.18.22'
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor:2.5.6'
 
-	implementation('net.logstash.logback:logstash-logback-encoder:5.3')
-	testImplementation('org.springframework.boot:spring-boot-starter-test')
-	testImplementation('org.assertj:assertj-core')
-	testImplementation('junit:junit:4.12')
+	testImplementation 'org.springframework.boot:spring-boot-starter-test:2.5.6'
 	testImplementation('com.github.tomakehurst:wiremock-standalone:2.18.0')
 }
 
 jar {
 	enabled = false
+}
+
+test {
+	useJUnitPlatform()
 }

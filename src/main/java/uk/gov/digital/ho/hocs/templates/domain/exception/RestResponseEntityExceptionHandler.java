@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
-import javax.xml.bind.JAXBException;
-
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static org.springframework.http.HttpStatus.*;
 import static uk.gov.digital.ho.hocs.templates.application.LogEvent.*;

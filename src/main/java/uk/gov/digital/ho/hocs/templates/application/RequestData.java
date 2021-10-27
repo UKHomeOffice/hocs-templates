@@ -1,8 +1,8 @@
 package uk.gov.digital.ho.hocs.templates.application;
 
-import org.apache.camel.Processor;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -15,23 +15,12 @@ public class RequestData implements HandlerInterceptor {
 
 
     public static final String CORRELATION_ID_HEADER = "X-Correlation-Id";
-    public static final String USER_ID_HEADER = "X-Auth-Userid";
+    public static final String USER_ID_HEADER = "X-Auth-UserId";
     public static final String USERNAME_HEADER = "X-Auth-Username";
     public static final String GROUP_HEADER = "X-Auth-Groups";
 
     private static final String ANONYMOUS = "anonymous";
 
-    public static Processor transferHeadersToMDC() {
-        return ex -> {
-            MDC.put(CORRELATION_ID_HEADER, ex.getIn().getHeader(CORRELATION_ID_HEADER, String.class));
-            MDC.put(USER_ID_HEADER, ex.getIn().getHeader(USER_ID_HEADER, String.class));
-            MDC.put(USERNAME_HEADER, ex.getIn().getHeader(USERNAME_HEADER, String.class));
-        };
-    }
-
-    private static boolean isNullOrEmpty(String value) {
-        return value == null || value.equals("");
-    }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -59,22 +48,22 @@ public class RequestData implements HandlerInterceptor {
 
     private String initialiseCorrelationId(HttpServletRequest request) {
         String correlationId = request.getHeader(CORRELATION_ID_HEADER);
-        return !isNullOrEmpty(correlationId) ? correlationId : UUID.randomUUID().toString();
+        return !StringUtils.hasText(correlationId) ? correlationId : UUID.randomUUID().toString();
     }
 
     private String initialiseUserId(HttpServletRequest request) {
         String userId = request.getHeader(USER_ID_HEADER);
-        return !isNullOrEmpty(userId) ? userId : ANONYMOUS;
+        return !StringUtils.hasText(userId) ? userId : ANONYMOUS;
     }
 
     private String initialiseUserName(HttpServletRequest request) {
         String username = request.getHeader(USERNAME_HEADER);
-        return !isNullOrEmpty(username) ? username : ANONYMOUS;
+        return !StringUtils.hasText(username) ? username : ANONYMOUS;
     }
 
     private String initialiseGroups(HttpServletRequest request) {
         String groups = request.getHeader(GROUP_HEADER);
-        return !isNullOrEmpty(groups) ? groups : "/QU5PTllNT1VTCg==";
+        return !StringUtils.hasText(groups) ? groups : "/QU5PTllNT1VTCg==";
     }
 
     public String correlationId() {

@@ -5,12 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
@@ -35,14 +33,12 @@ public class RestHelper {
         this.requestData = requestData;
     }
 
-    @Retryable(maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.delay}"))
     public <R> R get(String serviceBaseURL, String url, Class<R> responseType) {
         log.info("RestHelper making GET request to {}{}", serviceBaseURL, url, value(LogEvent.EVENT, REST_HELPER_GET));
         ResponseEntity<R> response = restTemplate.exchange(String.format("%s%s", serviceBaseURL, url), HttpMethod.GET, new HttpEntity<>(null, createAuthHeaders()), responseType);
         return response.getBody();
     }
 
-    @Retryable(maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.delay}"))
     public <R> R get(String serviceBaseURL, String url, ParameterizedTypeReference<R> responseType) {
         log.info("RestHelper making GET request to {}{}", serviceBaseURL, url, value(EVENT, REST_HELPER_GET));
         ResponseEntity<R> response = restTemplate.exchange(String.format("%s%s", serviceBaseURL, url), HttpMethod.GET, new HttpEntity<>(null, createAuthHeaders()), responseType);
@@ -59,6 +55,6 @@ public class RestHelper {
         return headers;
     }
 
-    private String getBasicAuth() { return String.format("Basic %s", Base64.getEncoder().encodeToString(basicAuth.getBytes(Charset.forName("UTF-8")))); }
+    private String getBasicAuth() { return String.format("Basic %s", Base64.getEncoder().encodeToString(basicAuth.getBytes(StandardCharsets.UTF_8))); }
 
 }

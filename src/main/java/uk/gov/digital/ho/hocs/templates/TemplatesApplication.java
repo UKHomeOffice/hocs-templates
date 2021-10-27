@@ -3,7 +3,6 @@ package uk.gov.digital.ho.hocs.templates;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 
 import javax.annotation.PreDestroy;
 
@@ -18,6 +17,7 @@ public class TemplatesApplication {
 
 	@PreDestroy
 	public void stop() {
+		log.info("hocs-templates stopping gracefully");
 		log.info("Stopping gracefully");
 	}
 

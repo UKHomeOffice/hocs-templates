@@ -1,5 +1,4 @@
-FROM quay.io/ukhomeofficedigital/alpine:v3.13
-
+FROM quay.io/ukhomeofficedigital/alpine:v3.14
 
 ENV USER user_hocs_templates
 ENV USER_ID 1000
@@ -9,7 +8,7 @@ ENV JAR_PATH build/libs
 
 USER root
 
-RUN apk add openjdk11-jre
+RUN apk add --no-cache openjdk11-jre
 
 WORKDIR /app
 

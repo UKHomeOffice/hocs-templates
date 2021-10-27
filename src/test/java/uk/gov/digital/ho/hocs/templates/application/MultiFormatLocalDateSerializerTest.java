@@ -2,11 +2,12 @@ package uk.gov.digital.ho.hocs.templates.application;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.time.DateTimeException;
@@ -16,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class MultiFormatLocalDateSerializerTest {
 
     private MultiFormatLocalDateSerializer serializer;
@@ -27,7 +28,7 @@ public class MultiFormatLocalDateSerializerTest {
     @Mock
     DeserializationContext context;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         serializer = new MultiFormatLocalDateSerializer();
     }

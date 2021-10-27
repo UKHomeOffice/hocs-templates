@@ -1,7 +1,7 @@
 package uk.gov.digital.ho.hocs.templates;
 
 import lombok.extern.slf4j.Slf4j;
-import net.logstash.logback.encoder.org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.docx4j.model.datastorage.migration.VariablePrepare;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
@@ -67,7 +67,7 @@ public class TemplateService {
         TeamDto team = getPrivateOfficeTeamDetails(caseUUID, caseDetails);
 
         HashMap<String, String> variables = createVariablesMap(caseDetails, primary, constituent, team);
-        variables.replaceAll((k, v) -> StringEscapeUtils.escapeXml(v));
+        variables.replaceAll((k, v) -> StringEscapeUtils.escapeXml10(v));
 
         InputStream templateInputStream = getTemplateAsInputStream(templateUUID);
 

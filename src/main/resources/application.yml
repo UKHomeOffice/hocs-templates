@@ -1,0 +1,27 @@
+info:
+  app:
+    fullname: Hocs Template Service
+    name: ${name:hocs-template-service}
+    version: ${version:0.0.1}
+
+server:
+  http2:
+    enabled: true
+  port: 8090
+  shutdown: graceful
+
+spring:
+  main:
+    banner-mode: off
+
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+hocs:
+  case-service: http://localhost:8082
+  document-service: http://localhost:8083
+  info-service: http://localhost:8085
+  basicauth: UNSET
