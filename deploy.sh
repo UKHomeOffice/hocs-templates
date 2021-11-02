@@ -9,17 +9,14 @@ export VERSION=${VERSION}
 if [[ ${KUBE_NAMESPACE} == *prod ]]
 then
     export MIN_REPLICAS="2"
-    export MAX_REPLICAS="6"
+    export MAX_REPLICAS="3"
+
     export UPTIME_PERIOD="Mon-Sun 05:00-23:00 Europe/London"
 else
     export MIN_REPLICAS="1"
     export MAX_REPLICAS="2"
-    export UPTIME_PERIOD="Mon-Fri 08:00-18:00 Europe/London"
-fi
 
-if [[ -z ${KUBE_TOKEN} ]] ; then
-    echo "Failed to find a value for KUBE_TOKEN - exiting"
-    exit -1
+    export UPTIME_PERIOD="Mon-Fri 08:00-18:00 Europe/London"
 fi
 
 cd kd
