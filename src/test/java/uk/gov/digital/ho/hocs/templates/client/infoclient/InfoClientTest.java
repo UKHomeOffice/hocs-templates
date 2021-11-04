@@ -1,21 +1,22 @@
 package uk.gov.digital.ho.hocs.templates.client.infoclient;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.digital.ho.hocs.templates.application.RestHelper;
 import uk.gov.digital.ho.hocs.templates.client.infoclient.dto.TeamDto;
 
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class InfoClientTest {
 
     @Mock
@@ -28,7 +29,7 @@ public class InfoClientTest {
 
     private InfoClient infoClient;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.infoClient = new InfoClient(restHelper, serviceBaseURL);
     }
@@ -46,10 +47,10 @@ public class InfoClientTest {
     }
 
 
-    @Test(expected = HttpClientErrorException.NotFound.class)
+    @Test
     public void shouldThrowNotFoundExceptionWhenGetTemplate() {
         doThrow(HttpClientErrorException.NotFound.class).when(restHelper).get(eq(serviceBaseURL), eq(String.format("/team/case/%s/topic/%s/stage/%s", uuid, uuid, STAGE_TYPE)), eq(TeamDto.class));
-        infoClient.getTeamForTopicAndStage(uuid, uuid, STAGE_TYPE);
+        assertThrows(HttpClientErrorException.NotFound.class, () -> infoClient.getTeamForTopicAndStage(uuid, uuid, STAGE_TYPE));
 
         verify(restHelper, Mockito.times(1)).get(eq(serviceBaseURL), eq(String.format("/team/case/%s/topic/%s/stage/%s", uuid, uuid, STAGE_TYPE)), eq(TeamDto.class));
         verifyNoMoreInteractions(restHelper);

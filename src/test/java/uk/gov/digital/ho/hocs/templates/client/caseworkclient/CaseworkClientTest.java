@@ -1,10 +1,10 @@
 package uk.gov.digital.ho.hocs.templates.client.caseworkclient;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.digital.ho.hocs.templates.application.RestHelper;
 import uk.gov.digital.ho.hocs.templates.client.caseworkclient.dto.AddressDto;
@@ -19,9 +19,10 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class CaseworkClientTest {
 
     @Mock
@@ -34,7 +35,7 @@ public class CaseworkClientTest {
 
     CaseworkClient caseworkClient;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.caseworkClient = new CaseworkClient(restHelper, serviceBaseURL);
     }
@@ -63,24 +64,24 @@ public class CaseworkClientTest {
         verifyNoMoreInteractions(restHelper);
     }
 
-    @Test(expected = HttpClientErrorException.NotFound.class)
+    @Test
     public void shouldThrowEntityNotFoundExceptionWhenGetCaseData() {
 
         doThrow(HttpClientErrorException.NotFound.class).when(restHelper).get(eq(serviceBaseURL), eq(String.format("/case/%s", uuid)), eq(CaseDataDto.class));
-        caseworkClient.getCase(uuid);
+        assertThrows(HttpClientErrorException.NotFound.class, () -> caseworkClient.getCase(uuid));
 
         verify(restHelper, times(1)).get(eq(serviceBaseURL), eq(String.format("/case/%s", uuid)), eq(CaseDataDto.class));
         verifyNoMoreInteractions(restHelper);
 
     }
 
-    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
+    @Test
     public void shouldTHrowEntityNotFoundExceptionWhenGetCorrespondentsData() {
         CorrespondentsDto correspondents = new CorrespondentsDto(new HashSet<>());
 
         when(restHelper.get(eq(serviceBaseURL), eq(String.format("/case/%s/correspondent", uuid)), eq(CorrespondentsDto.class))).thenReturn(correspondents);
 
-        caseworkClient.getCorrespondents(uuid);
+        assertThrows(ApplicationExceptions.EntityNotFoundException.class, () -> caseworkClient.getCorrespondents(uuid));
 
         verify(restHelper, times(1)).get(eq(serviceBaseURL), eq(String.format("/case/%s/correspondent", uuid)), eq(CorrespondentsDto.class));
         verifyNoMoreInteractions(restHelper);
