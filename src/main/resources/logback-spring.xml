@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration debug="false">
 
-    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
     <springProperty scope="context" name="appName" source="info.app.name"/>
     <springProperty scope="context" name="appVersion" source="info.app.version"/>
@@ -12,6 +12,9 @@
                 <Pattern>${CONSOLE_LOG_PATTERN}</Pattern>
             </layout>
         </appender>
+        <logger name="uk.gov" additivity="false" level="DEBUG">
+            <appender-ref ref="consoleAppender"/>
+        </logger>
     </springProfile>
 
     <springProfile name="!development">
@@ -31,11 +34,10 @@
                 </provider>
             </encoder>
         </appender>
+        <logger name="uk.gov" additivity="false" level="INFO">
+            <appender-ref ref="consoleAppender"/>
+        </logger>
     </springProfile>
-
-    <logger name="uk.gov" additivity="false" level="INFO">
-        <appender-ref ref="consoleAppender"/>
-    </logger>
 
     <logger name="io.undertow" additivity="false" level="WARN">
         <appender-ref ref="consoleAppender"/>
@@ -46,10 +48,6 @@
     </logger>
 
     <logger name="org.docx4j" additivity="false" level="WARN">
-        <appender-ref ref="consoleAppender"/>
-    </logger>
-
-    <logger name="com.zaxxer" additivity="false" level="WARN">
         <appender-ref ref="consoleAppender"/>
     </logger>
 
