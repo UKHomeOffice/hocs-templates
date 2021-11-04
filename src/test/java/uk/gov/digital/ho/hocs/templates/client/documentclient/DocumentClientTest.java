@@ -1,20 +1,21 @@
 package uk.gov.digital.ho.hocs.templates.client.documentclient;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.digital.ho.hocs.templates.application.RestHelper;
 
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DocumentClientTest {
 
     @Mock
@@ -25,7 +26,7 @@ public class DocumentClientTest {
 
     private DocumentClient documentClient;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.documentClient = new DocumentClient(restHelper, serviceBaseURL);
     }
@@ -42,10 +43,11 @@ public class DocumentClientTest {
         verifyNoMoreInteractions(restHelper);
     }
 
-    @Test(expected = HttpClientErrorException.NotFound.class)
+    @Test
     public void shouldThrowNotFoundExceptionWhenGetTemplate() {
         doThrow(HttpClientErrorException.NotFound.class).when(restHelper).get(eq(serviceBaseURL), eq(String.format("/document/%s/file", uuid)), eq(ByteArrayResource.class));
-        documentClient.getTemplate(uuid);
+
+        assertThrows(HttpClientErrorException.NotFound.class, () -> documentClient.getTemplate(uuid));
 
         verify(restHelper, times(1)).get(eq(serviceBaseURL), eq(String.format("/document/%s/file", uuid)), eq(ByteArrayResource.class));
         verifyNoMoreInteractions(restHelper);

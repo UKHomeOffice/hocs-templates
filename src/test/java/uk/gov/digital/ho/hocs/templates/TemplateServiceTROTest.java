@@ -1,11 +1,11 @@
 package uk.gov.digital.ho.hocs.templates;
 
 import org.apache.commons.compress.utils.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ByteArrayResource;
 import uk.gov.digital.ho.hocs.templates.client.caseworkclient.CaseworkClient;
 import uk.gov.digital.ho.hocs.templates.client.caseworkclient.dto.AddressDto;
@@ -29,7 +29,7 @@ import java.util.Collections;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TemplateServiceTROTest {
     private static final String CASE_TYPE = "TRO";
 
@@ -51,7 +51,7 @@ public class TemplateServiceTROTest {
     @Mock
     DocumentClient documentClient;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.templateService = new TemplateService(caseworkClient, infoClient, documentClient);
     }

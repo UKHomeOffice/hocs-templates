@@ -49,11 +49,14 @@ dependencies {
 
 	implementation('net.logstash.logback:logstash-logback-encoder:5.3')
 	testImplementation('org.springframework.boot:spring-boot-starter-test')
-	testImplementation('org.assertj:assertj-core')
-	testImplementation('junit:junit:4.12')
 	testImplementation('com.github.tomakehurst:wiremock-standalone:2.18.0')
 }
 
 jar {
 	enabled = false
 }
+
+test {
+	useJUnitPlatform()
+}
+
