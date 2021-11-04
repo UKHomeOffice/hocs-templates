@@ -12,6 +12,7 @@ import uk.gov.digital.ho.hocs.templates.client.infoclient.dto.TeamDto;
 
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
@@ -49,7 +50,8 @@ public class InfoClientTest {
     @Test
     public void shouldThrowNotFoundExceptionWhenGetTemplate() {
         doThrow(HttpClientErrorException.NotFound.class).when(restHelper).get(eq(serviceBaseURL), eq(String.format("/team/case/%s/topic/%s/stage/%s", uuid, uuid, STAGE_TYPE)), eq(TeamDto.class));
-        infoClient.getTeamForTopicAndStage(uuid, uuid, STAGE_TYPE);
+
+        assertThrows(HttpClientErrorException.NotFound.class, () -> infoClient.getTeamForTopicAndStage(uuid, uuid, STAGE_TYPE));
 
         verify(restHelper, Mockito.times(1)).get(eq(serviceBaseURL), eq(String.format("/team/case/%s/topic/%s/stage/%s", uuid, uuid, STAGE_TYPE)), eq(TeamDto.class));
         verifyNoMoreInteractions(restHelper);

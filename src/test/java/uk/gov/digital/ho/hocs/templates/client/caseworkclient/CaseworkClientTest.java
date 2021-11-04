@@ -68,6 +68,7 @@ public class CaseworkClientTest {
     public void shouldThrowEntityNotFoundExceptionWhenGetCaseData() {
 
         doThrow(HttpClientErrorException.NotFound.class).when(restHelper).get(eq(serviceBaseURL), eq(String.format("/case/%s", uuid)), eq(CaseDataDto.class));
+
         assertThrows(HttpClientErrorException.NotFound.class, () -> caseworkClient.getCase(uuid));
 
         verify(restHelper, times(1)).get(eq(serviceBaseURL), eq(String.format("/case/%s", uuid)), eq(CaseDataDto.class));
@@ -82,7 +83,6 @@ public class CaseworkClientTest {
         when(restHelper.get(eq(serviceBaseURL), eq(String.format("/case/%s/correspondent", uuid)), eq(CorrespondentsDto.class))).thenReturn(correspondents);
 
         assertThrows(ApplicationExceptions.EntityNotFoundException.class, () -> caseworkClient.getCorrespondents(uuid));
-        ;
 
         verify(restHelper, times(1)).get(eq(serviceBaseURL), eq(String.format("/case/%s/correspondent", uuid)), eq(CorrespondentsDto.class));
         verifyNoMoreInteractions(restHelper);
