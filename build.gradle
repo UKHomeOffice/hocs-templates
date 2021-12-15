@@ -39,7 +39,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-undertow'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
-	implementation 'net.logstash.logback:logstash-logback-encoder:6.6'
+	implementation 'net.logstash.logback:logstash-logback-encoder:7.0.1'
 
 	implementation 'javax:javaee-api:8.0.1'
 	implementation ('org.docx4j:docx4j:6.1.2'){
