@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM;
-
 @RestController
 public class TemplateResource {
 
@@ -23,7 +21,7 @@ public class TemplateResource {
         this.templateService = templateService;
     }
 
-    @GetMapping(value = "case/{caseUUID}/template/{templateUUID}", produces = APPLICATION_OCTET_STREAM)
+    @GetMapping(value = "case/{caseUUID}/template/{templateUUID}", produces = "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
     public ResponseEntity<byte[]> populateTemplate(@PathVariable UUID caseUUID, @PathVariable UUID templateUUID) {
         TemplateResult result = templateService.buildTemplate(caseUUID, templateUUID);
 
