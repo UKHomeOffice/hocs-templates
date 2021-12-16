@@ -21,7 +21,7 @@ public class TemplateResource {
         this.templateService = templateService;
     }
 
-    @GetMapping(value = "case/{caseUUID}/template/{templateUUID}", produces = "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+    @GetMapping(value = "case/{caseUUID}/template/{templateUUID}", produces = "application/octet-stream")
     public ResponseEntity<byte[]> populateTemplate(@PathVariable UUID caseUUID, @PathVariable UUID templateUUID) {
         TemplateResult result = templateService.buildTemplate(caseUUID, templateUUID);
 
