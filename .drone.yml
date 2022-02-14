@@ -168,9 +168,9 @@ steps:
       - fetch and checkout
     when:
       event:
-        - promote
-      target:
-        - release
+        - push
+      branch:
+        - main
 
   - name: deploy to cs-qa
     image: quay.io/ukhomeofficedigital/kd:v1.16.0
