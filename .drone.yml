@@ -105,6 +105,8 @@ steps:
   - name: generate & tag build
     image: quay.io/ukhomeofficedigital/hocs-version-bot:latest
     commands:
+      - source version.txt
+      - echo $VERSION
       - >
         /app/hocs-deploy
         --dockerRepository=quay.io/ukhomeofficedigital
@@ -139,6 +141,8 @@ steps:
   - name: deploy to cs-dev
     image: quay.io/ukhomeofficedigital/kd:v1.16.0
     commands:
+      - source version.txt
+      - echo $VERSION
       - cd kube
       - ./deploy.sh
     environment:
@@ -158,6 +162,8 @@ steps:
   - name: deploy to wcs-dev
     image: quay.io/ukhomeofficedigital/kd:v1.16.0
     commands:
+      - source version.txt
+      - echo $VERSION
       - cd kube
       - ./deploy.sh
     environment:
