@@ -114,7 +114,6 @@ steps:
         --service=hocs-templates
         --serviceGitToken=$${GITHUB_TOKEN}
         --sourceBuild=$${DRONE_COMMIT_SHA}
-        --version=$${SEMVER}
         --versionRepo="https://gitlab.digital.homeoffice.gov.uk/hocs/hocs-versions.git"
         --versionRepoServiceToken=$${GITLAB_TOKEN}
     environment:
