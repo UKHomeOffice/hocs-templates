@@ -91,7 +91,6 @@ steps:
     commands:
       - git fetch --tags
       - git checkout $${VERSION}
-      - echo $${VERSION}
 
   - name: wait for docker
     image: docker
@@ -104,7 +103,7 @@ steps:
         - main
 
   - name: generate & tag build
-    image: quay.io/ukhomeofficedigital/hocs-version-bot:latest
+    image: quay.io/ukhomeofficedigital/hocs-version-bot:build-49
     commands:
       - >
         /app/hocs-deploy
