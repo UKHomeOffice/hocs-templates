@@ -91,7 +91,6 @@ steps:
     commands:
       - git fetch --tags
       - git checkout $${VERSION}
-      - source version.txt
       - echo $VERSION
 
   - name: wait for docker
@@ -110,7 +109,7 @@ steps:
       - >
         /app/hocs-deploy
         --dockerRepository=quay.io/ukhomeofficedigital
-        --environment=dev
+        --environment=qa
         --registryPassword=$${DOCKER_PASSWORD}
         --registryUser=ukhomeofficedigital+hocs_quay_robot
         --service=hocs-templates
