@@ -105,6 +105,7 @@ steps:
       VERSION: "${DRONE_COMMIT_SHA}"
     depends_on:
       - fetch and checkout
+      - generate & tag build
     when:
       branch:
         - main
@@ -124,6 +125,7 @@ steps:
       VERSION: "${DRONE_COMMIT_SHA}"
     depends_on:
       - fetch and checkout
+      - generate & tag build
     when:
       branch:
         - main
@@ -136,9 +138,9 @@ steps:
       - n=0; until docker stats --no-stream; do echo "Waiting for Docker $n"; n=$((n +1)); sleep 1; done
     when:
       event:
-        - promote
-      target:
-        - release
+        - push
+      branch:
+        - main
 
   - name: generate & tag build
     image: quay.io/ukhomeofficedigital/hocs-version-bot:latest
@@ -189,8 +191,6 @@ steps:
         - promote
       target:
         - release
-    depends_on:
-      - generate & tag build
 
   - name: deploy to wcs-qa
     image: quay.io/ukhomeofficedigital/kd:v1.16.0
@@ -209,8 +209,6 @@ steps:
         - promote
       target:
         - release
-    depends_on:
-      - generate & tag build
 
   - name: deploy to not prod
     image: quay.io/ukhomeofficedigital/kd:v1.16.0
