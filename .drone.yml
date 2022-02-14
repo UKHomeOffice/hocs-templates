@@ -95,6 +95,8 @@ steps:
   - name: deploy to cs-dev
     image: quay.io/ukhomeofficedigital/kd:v1.16.0
     commands:
+      - source version.txt
+      - echo $VERSION
       - cd kube
       - ./deploy.sh
     environment:
@@ -115,6 +117,8 @@ steps:
   - name: deploy to wcs-dev
     image: quay.io/ukhomeofficedigital/kd:v1.16.0
     commands:
+      - source version.txt
+      - echo $VERSION
       - cd kube
       - ./deploy.sh
     environment:
@@ -177,8 +181,6 @@ steps:
   - name: deploy to cs-qa
     image: quay.io/ukhomeofficedigital/kd:v1.16.0
     commands:
-      - source version.txt
-      - echo $VERSION
       - cd kube
       - ./deploy.sh
     environment:
@@ -195,8 +197,6 @@ steps:
   - name: deploy to wcs-qa
     image: quay.io/ukhomeofficedigital/kd:v1.16.0
     commands:
-      - source version.txt
-      - echo $VERSION
       - cd kube
       - ./deploy.sh
     environment:
