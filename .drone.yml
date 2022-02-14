@@ -146,7 +146,7 @@ steps:
       - >
         /app/hocs-deploy
         --dockerRepository=quay.io/ukhomeofficedigital
-        --environment=qa
+        --environment=dev
         --registryPassword=$${DOCKER_PASSWORD}
         --registryUser=ukhomeofficedigital+hocs_quay_robot
         --service=hocs-templates
