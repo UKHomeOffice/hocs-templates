@@ -91,7 +91,7 @@ steps:
     commands:
       - git fetch --tags
       - git checkout $${VERSION}
-      - echo $VERSION
+      - echo $${VERSION}
 
   - name: wait for docker
     image: docker
@@ -118,8 +118,6 @@ steps:
         --version=$${SEMVER}
         --versionRepo="https://gitlab.digital.homeoffice.gov.uk/hocs/hocs-versions.git"
         --versionRepoServiceToken=$${GITLAB_TOKEN}
-      - source version.txt
-      - echo $VERSION
     environment:
       DOCKER_API_VERSION: 1.40
       DOCKER_PASSWORD:
