@@ -92,50 +92,6 @@ steps:
       - git fetch --tags
       - git checkout $${VERSION}
 
-  - name: deploy to cs-dev
-    image: quay.io/ukhomeofficedigital/kd:v1.16.0
-    commands:
-      - source version.txt
-      - echo $VERSION
-      - cd kube
-      - ./deploy.sh
-    environment:
-      ENVIRONMENT: cs-dev
-      KUBE_TOKEN:
-        from_secret: hocs_templates_cs_dev
-      KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
-      VERSION: "${DRONE_COMMIT_SHA}"
-    depends_on:
-      - fetch and checkout
-      - generate & tag build
-    when:
-      branch:
-        - main
-      event:
-        - push
-
-  - name: deploy to wcs-dev
-    image: quay.io/ukhomeofficedigital/kd:v1.16.0
-    commands:
-      - source version.txt
-      - echo $VERSION
-      - cd kube
-      - ./deploy.sh
-    environment:
-      ENVIRONMENT: wcs-dev
-      KUBE_TOKEN:
-        from_secret: hocs_templates_wcs_dev
-      KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
-      VERSION: "${DRONE_COMMIT_SHA}"
-    depends_on:
-      - fetch and checkout
-      - generate & tag build
-    when:
-      branch:
-        - main
-      event:
-        - push
-
   - name: wait for docker
     image: docker
     commands:
@@ -161,6 +117,8 @@ steps:
         --version=$${SEMVER}
         --versionRepo="https://gitlab.digital.homeoffice.gov.uk/hocs/hocs-versions.git"
         --versionRepoServiceToken=$${GITLAB_TOKEN}
+      - source version.txt
+      - echo $VERSION
     environment:
       DOCKER_API_VERSION: 1.40
       DOCKER_PASSWORD:
@@ -177,6 +135,44 @@ steps:
         - push
       branch:
         - main
+
+  - name: deploy to cs-dev
+    image: quay.io/ukhomeofficedigital/kd:v1.16.0
+    commands:
+      - cd kube
+      - ./deploy.sh
+    environment:
+      ENVIRONMENT: cs-dev
+      KUBE_TOKEN:
+        from_secret: hocs_templates_cs_dev
+      KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
+    depends_on:
+      - fetch and checkout
+      - generate & tag build
+    when:
+      branch:
+        - main
+      event:
+        - push
+
+  - name: deploy to wcs-dev
+    image: quay.io/ukhomeofficedigital/kd:v1.16.0
+    commands:
+      - cd kube
+      - ./deploy.sh
+    environment:
+      ENVIRONMENT: wcs-dev
+      KUBE_TOKEN:
+        from_secret: hocs_templates_wcs_dev
+      KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
+    depends_on:
+      - fetch and checkout
+      - generate & tag build
+    when:
+      branch:
+        - main
+      event:
+        - push
 
   - name: deploy to cs-qa
     image: quay.io/ukhomeofficedigital/kd:v1.16.0
