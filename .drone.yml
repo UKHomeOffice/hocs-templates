@@ -113,7 +113,7 @@ steps:
         --registryUser=ukhomeofficedigital+hocs_quay_robot
         --service=hocs-templates
         --serviceGitToken=$${GITHUB_TOKEN}
-        --sourceBuild=$${VERSION}
+        --sourceBuild=$${DRONE_COMMIT_SHA}
         --version=$${SEMVER}
         --versionRepo="https://gitlab.digital.homeoffice.gov.uk/hocs/hocs-versions.git"
         --versionRepoServiceToken=$${GITLAB_TOKEN}
