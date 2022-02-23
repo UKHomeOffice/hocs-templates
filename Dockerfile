@@ -1,21 +1,19 @@
 FROM quay.io/ukhomeofficedigital/hocs-base-image as builder
 
-COPY build/libs/*.jar .
+COPY build/libs/hocs-templates.jar .
 
-RUN java -Djarmode=layertools -jar *.jar extract
+RUN java -Djarmode=layertools -jar hocs-templates.jar extract
 
 FROM quay.io/ukhomeofficedigital/hocs-base-image
 
-WORKDIR /app
+COPY scripts/run.sh /app/scripts/run.sh
 
-COPY scripts/run.sh ./scripts/run.sh
+WORKDIR /app
 
 COPY --from=builder dependencies/ ./
 COPY --from=builder spring-boot-loader/ ./
 COPY --from=builder application/ ./
 
-EXPOSE 8080
-
-USER ${USER_ID}
+USER 1001
 
 CMD ["sh", "/app/scripts/run.sh"]

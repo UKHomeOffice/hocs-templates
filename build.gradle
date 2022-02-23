@@ -9,7 +9,6 @@ def docx4jVersion = '11.3.2'
 def lombokVersion = '1.18.22'
 
 group = 'uk.gov.digital.ho.hocs'
-version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
 repositories {
