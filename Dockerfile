@@ -1,42 +1,19 @@
-FROM quay.io/ukhomeofficedigital/alpine:v3.14 as builder
+FROM quay.io/ukhomeofficedigital/hocs-base-image as builder
 
-USER root
+COPY build/libs/hocs-templates.jar .
 
-RUN apk add --no-cache openjdk11-jre
+RUN java -Djarmode=layertools -jar hocs-templates.jar extract
 
-COPY build/libs/*.jar .
-
-RUN java -Djarmode=layertools -jar *.jar extract
-
-FROM quay.io/ukhomeofficedigital/alpine:v3.14
-
-USER root
-
-RUN apk add --no-cache openjdk11-jre
-
-WORKDIR /app
-
-ENV USER user_hocs
-ENV USER_ID 1000
-ENV GROUP group_hocs
-
-RUN addgroup -S ${GROUP} && \
-    adduser -S -u ${USER_ID} ${USER} -G ${GROUP} -h /app && \
-    mkdir -p /app && \
-    chown -R ${USER}:${GROUP} /app
+FROM quay.io/ukhomeofficedigital/hocs-base-image
 
 COPY scripts/run.sh /app/scripts/run.sh
 
-RUN chmod a+x /app/scripts/*
+WORKDIR /app
 
 COPY --from=builder dependencies/ ./
-COPY --from=builder snapshot-dependencies/ ./
-RUN true # Bug where copying without action then copying again throws an error
 COPY --from=builder spring-boot-loader/ ./
 COPY --from=builder application/ ./
 
-EXPOSE 8080
-
-USER ${USER_ID}
+USER 1001
 
 CMD ["sh", "/app/scripts/run.sh"]
