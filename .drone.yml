@@ -164,12 +164,6 @@ depends_on:
   - build tag
    
 steps:
-  - name: fetch and checkout
-    image: alpine/git
-    commands:
-      - git fetch --tags
-      - git checkout $${DRONE_TAG}
-
   - name: deploy to cs-dev
     image: quay.io/ukhomeofficedigital/kd
     commands:
@@ -182,7 +176,7 @@ steps:
       KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
       VERSION: "${DRONE_TAG}"
     depends_on:
-      - fetch and checkout
+      - clone
 
   - name: deploy to wcs-dev
     image: quay.io/ukhomeofficedigital/kd
@@ -196,4 +190,4 @@ steps:
       KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
       VERSION: "${DRONE_TAG}"
     depends_on:
-      - fetch and checkout
+      - clone
