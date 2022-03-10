@@ -1,0 +1,14 @@
+name: 'PR label checker'
+on:
+  pull_request:
+    types: [ labeled, unlabeled, opened, reopened, synchronize ]
+
+jobs:
+  build:
+    name: Ensure that the pull request has the required labels
+    runs-on: ubuntu-latest
+    steps:
+      - uses: UKHomeOffice/match-label-action@main
+        with:
+          labels: minor,major,patch
+          mode: singular
