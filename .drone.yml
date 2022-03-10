@@ -2,9 +2,14 @@
 kind: pipeline
 type: kubernetes
 name: build
+trigger:
+  event:
+    - push
+  branch:
+    exclude:
+      - main
 
 steps:
-
   - name: test project
     image: quay.io/ukhomeofficedigital/hocs-base-image-build
     commands:
@@ -28,13 +33,23 @@ steps:
       DOCKER_PASSWORD:
         from_secret: QUAY_ROBOT_TOKEN
       DOCKER_USERNAME: ukhomeofficedigital+hocs_quay_robot
-    when:
-      branch:
-        exclude:
-          - main
-          - "dependabot*"
     depends_on:
       - test project
+
+---
+kind: pipeline
+type: kubernetes
+name: build tag
+trigger:
+  event:
+    - tag
+  branch:
+    - main
+steps:
+  - name: test project
+    image: quay.io/ukhomeofficedigital/hocs-base-image-build
+    commands:
+      - ./gradlew clean build --no-daemon
 
   - name: build & push latest
     image: plugins/docker
@@ -42,22 +57,15 @@ steps:
       registry: quay.io
       repo: quay.io/ukhomeofficedigital/hocs-templates
       tags:
+        - ${DRONE_TAG}
         - ${DRONE_COMMIT_SHA}
         - latest
     environment:
       DOCKER_PASSWORD:
         from_secret: QUAY_ROBOT_TOKEN
       DOCKER_USERNAME: ukhomeofficedigital+hocs_quay_robot
-    when:
-      branch:
-        include:
-          - main
     depends_on:
       - test project
-
-trigger:
-  event:
-    - push
 
 ---
 kind: pipeline
@@ -67,9 +75,7 @@ depends_on:
   - build
 trigger:
   event:
-    exclude:
-      - pull_request
-      - tag
+    - promote
 
 steps:
   - name: fetch and checkout
@@ -77,44 +83,6 @@ steps:
     commands:
       - git fetch --tags
       - git checkout $${VERSION}
-
-  - name: deploy to cs-dev
-    image: quay.io/ukhomeofficedigital/kd
-    commands:
-      - cd kube
-      - ./deploy.sh
-    environment:
-      ENVIRONMENT: cs-dev
-      KUBE_TOKEN:
-        from_secret: hocs_templates_cs_dev
-      KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
-      VERSION: "${DRONE_COMMIT_SHA}"
-    depends_on:
-      - fetch and checkout
-    when:
-      branch:
-        - main
-      event:
-        - push
-
-  - name: deploy to wcs-dev
-    image: quay.io/ukhomeofficedigital/kd
-    commands:
-      - cd kube
-      - ./deploy.sh
-    environment:
-      ENVIRONMENT: wcs-dev
-      KUBE_TOKEN:
-        from_secret: hocs_templates_wcs_dev
-      KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
-      VERSION: "${DRONE_COMMIT_SHA}"
-    depends_on:
-      - fetch and checkout
-    when:
-      branch:
-        - main
-      event:
-        - push
 
   - name: deploy to cs-qa
     image: quay.io/ukhomeofficedigital/kd
@@ -127,8 +95,6 @@ steps:
         from_secret: hocs_templates_cs_qa
       KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
     when:
-      event:
-        - promote
       target:
         - release
     depends_on:
@@ -145,8 +111,6 @@ steps:
         from_secret: hocs_templates_wcs_qa
       KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
     when:
-      event:
-        - promote
       target:
         - release
     depends_on:
@@ -165,8 +129,6 @@ steps:
     depends_on:
       - fetch and checkout
     when:
-      event:
-        - promote
       target:
         exclude:
           - release
@@ -185,8 +147,51 @@ steps:
     depends_on:
       - fetch and checkout
     when:
-      event:
-        - promote
       target:
-        include:
-          - "*-prod"
+        - "*-prod"
+
+
+---
+kind: pipeline
+type: kubernetes
+name: deploy tag
+trigger:
+  event:
+    - tag
+  branch:
+    - main
+
+steps:
+  - name: fetch and checkout
+    image: alpine/git
+    commands:
+      - git fetch --tags
+      - git checkout $${DRONE_TAG}
+
+  - name: deploy to cs-dev
+    image: quay.io/ukhomeofficedigital/kd
+    commands:
+      - cd kube
+      - ./deploy.sh
+    environment:
+      ENVIRONMENT: cs-dev
+      KUBE_TOKEN:
+        from_secret: hocs_templates_cs_dev
+      KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
+      VERSION: "${DRONE_TAG}"
+    depends_on:
+      - fetch and checkout
+
+  - name: deploy to wcs-dev
+    image: quay.io/ukhomeofficedigital/kd
+    commands:
+      - cd kube
+      - ./deploy.sh
+    environment:
+      ENVIRONMENT: wcs-dev
+      KUBE_TOKEN:
+        from_secret: hocs_templates_wcs_dev
+      KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
+      VERSION: "${DRONE_TAG}"
+    depends_on:
+      - fetch and checkout
