@@ -8,7 +8,7 @@ jobs:
     name: Ensure that the pull request has the required labels
     runs-on: ubuntu-latest
     steps:
-      - uses: UKHomeOffice/match-label-action@main
+      - uses: UKHomeOffice/match-label-action@v1.0.0
         with:
           labels: minor,major,patch
           mode: singular
