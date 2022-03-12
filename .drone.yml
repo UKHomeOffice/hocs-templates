@@ -174,7 +174,7 @@ steps:
       KUBE_TOKEN:
         from_secret: hocs_templates_cs_dev
       KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
-      VERSION: "${DRONE_TAG}"
+      VERSION: ${DRONE_TAG}
     depends_on:
       - clone
 
@@ -188,6 +188,6 @@ steps:
       KUBE_TOKEN:
         from_secret: hocs_templates_wcs_dev
       KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
-      VERSION: "${DRONE_TAG}"
+      VERSION: ${DRONE_TAG}
     depends_on:
       - clone
