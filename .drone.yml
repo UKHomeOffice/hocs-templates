@@ -1,13 +1,9 @@
 
 ---
 anchors:
-
-  - &base-image
+  - &test
     image: quay.digital.homeoffice.gov.uk/ukhomeofficedigital/hocs-base-image-build
     pull: always
-
-  - &test
-    <<: *base-image
     commands:
       - ./gradlew clean build --no-daemon
 kind: pipeline
