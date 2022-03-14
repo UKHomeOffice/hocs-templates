@@ -1,11 +1,5 @@
 
 ---
-anchors:
-  - &test
-    image: quay.digital.homeoffice.gov.uk/ukhomeofficedigital/hocs-base-image-build
-    pull: always
-    commands:
-      - ./gradlew clean build --no-daemon
 kind: pipeline
 type: kubernetes
 name: build
@@ -16,6 +10,12 @@ trigger:
     exclude:
       - main
 
+
+  test: &test
+    image: quay.digital.homeoffice.gov.uk/ukhomeofficedigital/hocs-base-image-build
+    pull: always
+    commands:
+      - ./gradlew clean build --no-daemon
 steps:
 
   - name: test project
