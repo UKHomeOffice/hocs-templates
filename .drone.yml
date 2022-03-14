@@ -1,12 +1,3 @@
-x-base-image: &base-image
-  image: quay.digital.homeoffice.gov.uk/ukhomeofficedigital/hocs-base-image-build
-  pull: always
-
-x-test: &test
-  name: test project
-  <<: *base-image
-  commands:
-    - ./gradlew clean build --no-daemon
 ---
 kind: pipeline
 type: kubernetes
@@ -17,6 +8,16 @@ trigger:
   branch:
     exclude:
       - main
+
+x-base-image: &base-image
+  image: quay.digital.homeoffice.gov.uk/ukhomeofficedigital/hocs-base-image-build
+  pull: always
+
+x-test: &test
+  name: test project
+  <<: *base-image
+  commands:
+    - ./gradlew clean build --no-daemon
 
 steps:
 
