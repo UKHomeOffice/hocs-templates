@@ -4,7 +4,7 @@ x-base-image: &base-image
 
 x-test: &test
   name: test project
-  <: *base-image
+  <<: *base-image
   commands:
     - ./gradlew clean build --no-daemon
 ---
@@ -20,7 +20,7 @@ trigger:
 
 steps:
 
-  - <: *test
+  - <<: *test
 
   - name: sonar scanner
     image: quay.digital.homeoffice.gov.uk/ukhomeofficedigital/sonar-scanner
