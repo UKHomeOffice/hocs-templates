@@ -24,6 +24,7 @@ trigger:
 steps:
   - name: lint bash
     image: koalaman/shellcheck-alpine
+    pull: always
     commands:
       - shellcheck kube/*.sh
     depends_on:
