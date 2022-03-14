@@ -30,7 +30,8 @@ steps:
       - clone
 
   - name: dry-run kd dev
-    image: quay.io/ukhomeofficedigital/kd:v1.16.0
+    image: quay.digital.homeoffice.gov.uk/ukhomeofficedigital/kd
+    pull: always
     environment:
       DRY_RUN: true
       VERSION: test
@@ -44,7 +45,8 @@ steps:
       - lint bash
 
   - name: dry-run kd prod
-    image: quay.io/ukhomeofficedigital/kd:v1.16.0
+    image: quay.digital.homeoffice.gov.uk/ukhomeofficedigital/kd
+    pull: always
     environment:
       DRY_RUN: true
       VERSION: test
