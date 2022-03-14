@@ -5,7 +5,6 @@ anchors:
     pull: always
 
   - &test
-    name: test project
     <<: *base-image
     commands:
       - ./gradlew clean build --no-daemon
@@ -22,7 +21,8 @@ trigger:
 
 steps:
 
-  - <<: *test
+  - name: test project
+    <<: *test
 
   - name: sonar scanner
     image: quay.digital.homeoffice.gov.uk/ukhomeofficedigital/sonar-scanner
@@ -57,7 +57,8 @@ trigger:
     - main
 steps:
 
-  - <<: *test
+  - name: test project
+    <<: *test
 
   - name: build & push latest
     image: plugins/docker
