@@ -1,3 +1,5 @@
+
+---
 anchors:
 
   - &base-image
@@ -8,7 +10,6 @@ anchors:
     <<: *base-image
     commands:
       - ./gradlew clean build --no-daemon
----
 kind: pipeline
 type: kubernetes
 name: build
