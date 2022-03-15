@@ -10,12 +10,12 @@ local testProject() = {
   type: 'kubernetes',
   name: 'build',
   trigger: {
-    event: 'push',
+    event: ['push'],
     branch: {
-      exclude : 'main'
+      exclude : ['main']
     }
   },
   steps: [
-     - testProject()
+     testProject()
   ]
 }
