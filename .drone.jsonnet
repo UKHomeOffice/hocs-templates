@@ -1,8 +1,8 @@
 local buildImage = 'quay.io/ukhomeofficedigital/hocs-base-image-build';
 local testProject() = {
-    name: 'test project',
-    image: buildImage,
-    command: './gradlew clean build --no-daemon'
+  name: 'test project',
+  image: buildImage,
+  command: './gradlew clean build --no-daemon'
 };
 
 {
@@ -12,7 +12,7 @@ local testProject() = {
   trigger: {
     event: 'push',
     branch: {
-        exclude : 'main'
+      exclude : 'main'
     }
   },
   steps: [
