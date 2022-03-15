@@ -15,7 +15,6 @@ local testProject() = {
         exclude : 'main'
     }
   },
-  steps: [
-    testProject(),
-  ]
+  steps:
+    testProject()
 }
