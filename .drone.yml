@@ -39,40 +39,7 @@ steps:
 ---
 kind: pipeline
 type: kubernetes
-name: build tag
-trigger:
-  event:
-    - tag
-  branch:
-    - main
-steps:
-  - name: test project
-    image: quay.io/ukhomeofficedigital/hocs-base-image-build
-    commands:
-      - ./gradlew clean build --no-daemon
-
-  - name: build & push latest
-    image: plugins/docker
-    settings:
-      registry: quay.io
-      repo: quay.io/ukhomeofficedigital/hocs-templates
-      tags:
-        - ${DRONE_TAG}
-        - ${DRONE_COMMIT_SHA}
-        - latest
-    environment:
-      DOCKER_PASSWORD:
-        from_secret: QUAY_ROBOT_TOKEN
-      DOCKER_USERNAME: ukhomeofficedigital+hocs_quay_robot
-    depends_on:
-      - test project
-
----
-kind: pipeline
-type: kubernetes
 name: deploy
-depends_on:
-  - build
 trigger:
   event:
     - promote
@@ -114,7 +81,7 @@ steps:
       target:
         - release
     depends_on:
-      - generate & tag build
+      - fetch and checkout
 
   - name: deploy to not prod
     image: quay.io/ukhomeofficedigital/kd
@@ -150,6 +117,36 @@ steps:
       target:
         - "*-prod"
 
+---
+kind: pipeline
+type: kubernetes
+name: build tag
+trigger:
+  event:
+    - tag
+  branch:
+    - main
+steps:
+  - name: test project
+    image: quay.io/ukhomeofficedigital/hocs-base-image-build
+    commands:
+      - ./gradlew clean build --no-daemon
+
+  - name: build & push latest
+    image: plugins/docker
+    settings:
+      registry: quay.io
+      repo: quay.io/ukhomeofficedigital/hocs-templates
+      tags:
+        - ${DRONE_TAG}
+        - ${DRONE_COMMIT_SHA}
+        - latest
+    environment:
+      DOCKER_PASSWORD:
+        from_secret: QUAY_ROBOT_TOKEN
+      DOCKER_USERNAME: ukhomeofficedigital+hocs_quay_robot
+    depends_on:
+      - test project
 
 ---
 kind: pipeline
