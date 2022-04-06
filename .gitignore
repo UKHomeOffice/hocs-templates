@@ -28,6 +28,7 @@ HELP.md
 
 ### VS Code ###
 .vscode/
+/bin/
 
 ### Mac Specific ###
 .DS_Store
