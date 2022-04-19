@@ -5,7 +5,7 @@ plugins {
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 }
 
-def docx4jVersion = '11.4.5'
+def docx4jVersion = '11.4.6'
 def lombokVersion = '1.18.24'
 
 group = 'uk.gov.digital.ho.hocs'
