@@ -1,3 +1,5 @@
+import org.gradle.api.JavaVersion
+
 plugins {
 	id 'java'
 	id 'jacoco'
@@ -9,7 +11,7 @@ def docx4jVersion = '11.4.6'
 def lombokVersion = '1.18.24'
 
 group = 'uk.gov.digital.ho.hocs'
-sourceCompatibility = '11'
+sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
 	mavenCentral()
