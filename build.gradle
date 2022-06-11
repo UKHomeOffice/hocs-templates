@@ -17,25 +17,6 @@ repositories {
 	mavenCentral()
 }
 
-plugins.withType(JacocoPlugin) {
-	tasks["test"].finalizedBy 'jacocoTestReport'
-}
-
-test {
-	finalizedBy jacocoTestReport // report is always generated after tests run
-}
-
-jacocoTestReport {
-	dependsOn test // tests are required to run before generating the report
-	reports {
-		xml.required = true
-		html.required = false
-		csv.required = false
-		//for XML
-		xml.destination file("${buildDir}/reports/jacoco.xml")
-	}
-}
-
 dependencies {
 	implementation('org.springframework.boot:spring-boot-starter-web') {
 		exclude(module: 'spring-boot-starter-tomcat')
@@ -45,16 +26,8 @@ dependencies {
 
 	implementation 'net.logstash.logback:logstash-logback-encoder:7.2'
 
-	implementation("org.docx4j:docx4j-core:${docx4jVersion}") {
-		exclude(module: 'jakarta.xml.bind-api')
-	}
-	implementation "org.docx4j:docx4j-JAXB-ReferenceImpl:${docx4jVersion}"
-
-	implementation "jakarta.xml.bind:jakarta.xml.bind-api:3.0.1"
-	implementation "com.sun.xml.bind:jaxb-impl:4.0.0"
-	implementation 'jakarta.activation:jakarta.activation-api:2.1.0'
-
-
+	implementation "org.docx4j:docx4j-core:${docx4jVersion}"
+	implementation "jakarta.xml.bind:jakarta.xml.bind-api:4.0.0"
 
 	compileOnly "org.projectlombok:lombok:${lombokVersion}"
 	annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
@@ -72,4 +45,21 @@ jar {
 
 test {
 	useJUnitPlatform()
+	finalizedBy jacocoTestReport // report is always generated after tests run
+
+}
+
+plugins.withType(JacocoPlugin) {
+	tasks["test"].finalizedBy 'jacocoTestReport'
+}
+
+jacocoTestReport {
+	dependsOn test // tests are required to run before generating the report
+	reports {
+		xml.required = true
+		html.required = false
+		csv.required = false
+		//for XML
+		xml.destination file("${buildDir}/reports/jacoco.xml")
+	}
 }
