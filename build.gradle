@@ -8,6 +8,7 @@ plugins {
 }
 
 def docx4jVersion = '11.4.7'
+def jaxbVersion = '4.0.0'
 def lombokVersion = '1.18.24'
 
 group = 'uk.gov.digital.ho.hocs'
@@ -27,7 +28,10 @@ dependencies {
 	implementation 'net.logstash.logback:logstash-logback-encoder:7.2'
 
 	implementation "org.docx4j:docx4j-core:${docx4jVersion}"
-	implementation "jakarta.xml.bind:jakarta.xml.bind-api:4.0.0"
+	implementation "org.docx4j:docx4j-JAXB-ReferenceImpl:${docx4jVersion}"
+	implementation "jakarta.xml.bind:jakarta.xml.bind-api:${jaxbVersion}"
+	implementation "com.sun.xml.bind:jaxb-impl:${jaxbVersion}"
+	implementation 'jakarta.activation:jakarta.activation-api:2.1.0'
 
 	compileOnly "org.projectlombok:lombok:${lombokVersion}"
 	annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
