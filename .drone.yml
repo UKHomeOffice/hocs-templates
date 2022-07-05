@@ -10,10 +10,6 @@ trigger:
       - main
 
 steps:
-  - name: test project
-    image: quay.io/ukhomeofficedigital/hocs-base-image-build:1.0.2
-    commands:
-      - ./gradlew clean build --no-daemon
 
   - name: build & push
     image: plugins/docker
@@ -27,7 +23,7 @@ steps:
         from_secret: QUAY_ROBOT_TOKEN
       DOCKER_USERNAME: ukhomeofficedigital+hocs_quay_robot
     depends_on:
-      - test project
+      - clone
 
 ---
 kind: pipeline
@@ -122,10 +118,6 @@ trigger:
     - support/*
 
 steps:
-  - name: test project
-    image: quay.io/ukhomeofficedigital/hocs-base-image-build:1.0.2
-    commands:
-      - ./gradlew clean build --no-daemon
 
   - name: build & push tag main
     image: plugins/docker
@@ -141,7 +133,7 @@ steps:
         from_secret: QUAY_ROBOT_TOKEN
       DOCKER_USERNAME: ukhomeofficedigital+hocs_quay_robot
     depends_on:
-      - test project
+      - clone
     when:
       branch:
         - main
@@ -159,7 +151,7 @@ steps:
         from_secret: QUAY_ROBOT_TOKEN
       DOCKER_USERNAME: ukhomeofficedigital+hocs_quay_robot
     depends_on:
-      - test project
+      - clone
     when:
       branch:
         - support/*
