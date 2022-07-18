@@ -5,6 +5,4 @@ on:
 
 jobs:
   test:
-    uses: UKHomeOffice/hocs-ci-infrastructure/.github/workflows/test.yml@v1
-    with:
-      components: ''
+    uses: UKHomeOffice/hocs-ci-infrastructure/.github/workflows/test-jvm.yml@v1
