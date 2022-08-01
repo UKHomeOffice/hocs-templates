@@ -7,7 +7,7 @@ RUN jdeps --ignore-missing-deps -q --print-module-deps ./build/libs/hocs-templat
 
 RUN jlink --verbose --compress 2 --strip-java-debug-attributes --no-header-files --no-man-pages --output jre --add-modules $(cat jre-deps.info)
 
-FROM alpine
+FROM alpine as production
 
 WORKDIR /app
 
