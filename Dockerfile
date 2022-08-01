@@ -4,15 +4,12 @@ COPY . .
 
 RUN ./gradlew clean assemble --no-daemon && java -Djarmode=layertools -jar ./build/libs/hocs-templates.jar extract
 
-FROM quay.io/ukhomeofficedigital/hocs-base-image
+FROM gcr.io/distroless/java17-debian11
 
-WORKDIR /app
+USER nonroot:nonroot
 
-COPY --from=builder --chown=user_hocs:group_hocs ./scripts/run.sh ./
-COPY --from=builder --chown=user_hocs:group_hocs ./spring-boot-loader/ ./
-COPY --from=builder --chown=user_hocs:group_hocs ./dependencies/ ./
-COPY --from=builder --chown=user_hocs:group_hocs ./application/ ./
+COPY --from=builder --chown=nonroot:nonroot ./build/libs/hocs-templates.jar ./
 
 USER 10000
 
-CMD ["sh", "/app/run.sh"]
+ENTRYPOINT ["java","-jar","/hocs-templates.jar"]
