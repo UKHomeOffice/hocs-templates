@@ -1,6 +1,48 @@
 ---
 kind: pipeline
 type: kubernetes
+name: deploy tag
+trigger:
+  event:
+    - tag
+  branch:
+    - main
+
+steps:
+  - name: checkout
+    image: quay.io/ukhomeofficedigital/hocs-helm-kubectl:1.0.0
+    commands:
+      - git fetch --tags
+      - git checkout ${DRONE_TAG}
+      - git submodule update --init --recursive
+
+  - &deploy
+    name: cs-dev
+    image: quay.io/ukhomeofficedigital/hocs-helm-kubectl:1.0.0
+    environment:
+      CHART_NAME: hocs-templates
+      KUBE_CLUSTER: acp-notprod
+      KUBE_NAMESPACE: cs-dev
+      KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
+      KUBE_TOKEN:
+        from_secret: cs_notprod
+      VERSION: ${DRONE_TAG}
+    commands:
+      - ./ci/helm/setup-kube.sh
+      - ./ci/helm/helm-deploy.sh --values ./helm/values-notprod.yaml
+    depends_on:
+      - checkout
+
+  - <<: *deploy
+    name: wcs-dev
+    environment:
+      KUBE_NAMESPACE: wcs-dev
+    depends_on:
+      - cs-dev
+
+---
+kind: pipeline
+type: kubernetes
 name: deploy
 trigger:
   event:
@@ -79,42 +121,3 @@ steps:
       target:
        include:
         - "*-prod"
-
----
-kind: pipeline
-type: kubernetes
-name: deploy tag
-trigger:
-  event:
-    - tag
-  branch:
-    - main
-   
-steps:
-  - name: deploy to cs-dev
-    image: quay.io/ukhomeofficedigital/kd
-    commands:
-      - cd kube
-      - ./deploy.sh
-    environment:
-      ENVIRONMENT: cs-dev
-      KUBE_TOKEN:
-        from_secret: hocs_templates_cs_dev
-      KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
-      VERSION: ${DRONE_TAG}
-    depends_on:
-      - clone
-
-  - name: deploy to wcs-dev
-    image: quay.io/ukhomeofficedigital/kd
-    commands:
-      - cd kube
-      - ./deploy.sh
-    environment:
-      ENVIRONMENT: wcs-dev
-      KUBE_TOKEN:
-        from_secret: hocs_templates_wcs_dev
-      KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
-      VERSION: ${DRONE_TAG}
-    depends_on:
-      - clone
