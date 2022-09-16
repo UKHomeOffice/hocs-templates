@@ -10,6 +10,7 @@ hocs-backend-service:
          memory: 768Mi
        requests:
          memory: 768Mi
+    port: "8080"
     javaOpts: >-
       -XX:MaxRAMPercentage=70
       -Djava.security.egd=file:/dev/./urandom
@@ -17,6 +18,6 @@ hocs-backend-service:
       -Dhttps.proxyHost=hocs-outbound-proxy.{{ .Values.namespace }}.svc.cluster.local
       -Dhttps.proxyPort=31290
       -Dhttp.nonProxyHosts=*.{{ .Values.namespace }}.svc.cluster.local
-    caseService: https://hocs-case.{{ .Values.namespace }}.svc.cluster.local
+    caseService: https://hocs-casework.{{ .Values.namespace }}.svc.cluster.local
     infoService: https://hocs-info-service.{{ .Values.namespace }}.svc.cluster.local
     docsService: https://hocs-docs.{{ .Values.namespace }}.svc.cluster.local
