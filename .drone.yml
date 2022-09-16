@@ -14,6 +14,7 @@ steps:
     commands:
       - git fetch --tags
       - git checkout --recurse-submodules ${DRONE_TAG}
+      - git submodule update --init --recursive
 
   - &deploy
     name: cs-dev
