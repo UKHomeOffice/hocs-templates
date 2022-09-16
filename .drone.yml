@@ -13,13 +13,14 @@ steps:
     image: quay.io/ukhomeofficedigital/hocs-helm-kubectl:1.0.0
     commands:
       - git fetch --tags
-      - git checkout --recurse-submodules ${DRONE_TAG}
+      - git checkout ${DRONE_TAG}
       - git submodule update --init --recursive
 
   - &deploy
     name: cs-dev
     image: quay.io/ukhomeofficedigital/hocs-helm-kubectl:1.0.0
     environment:
+      CHART_NAME: hocs-templates
       KUBE_CLUSTER: acp-notprod
       KUBE_NAMESPACE: cs-dev
       KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
