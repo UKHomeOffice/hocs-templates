@@ -1,0 +1,22 @@
+---
+hocs-backend-service:
+  nameOverride: hocs-templates
+
+  app:
+    image:
+      repository: quay.io/ukhomeofficedigital/hocs-templates
+    resources:
+       limits:
+         memory: 768Mi
+       requests:
+         memory: 768Mi
+    javaOpts: >-
+      -XX:MaxRAMPercentage=70
+      -Djava.security.egd=file:/dev/./urandom
+      -Djavax.net.ssl.trustStore=/etc/keystore/truststore.jks
+      -Dhttps.proxyHost=hocs-outbound-proxy.{{ .Values.namespace }}.svc.cluster.local
+      -Dhttps.proxyPort=31290
+      -Dhttp.nonProxyHosts=*.{{ .Values.namespace }}.svc.cluster.local
+    caseService: https://hocs-casework.{{ .Values.namespace }}.svc.cluster.local
+    infoService: https://hocs-info-service.{{ .Values.namespace }}.svc.cluster.local
+    docsService: https://hocs-docs.{{ .Values.namespace }}.svc.cluster.local
