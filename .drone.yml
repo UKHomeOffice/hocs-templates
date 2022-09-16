@@ -10,8 +10,6 @@ environment:
   CHART_NAME: hocs-templates
   KUBE_CLUSTER: acp
   KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
-  KUBE_TOKEN:
-    from_secret: cs_notprod
 
 steps:
   - name: checkout
@@ -25,6 +23,8 @@ steps:
     image: quay.io/ukhomeofficedigital/hocs-helm-kubectl:1.0.0
     environment:
       KUBE_NAMESPACE: cs-qa
+      KUBE_TOKEN:
+        from_secret: cs_notprod
     commands:
       - ./ci/helm/helm-deploy.sh --values ./helm/values-notprod.yaml --values ./helm/values-qa.yaml
     depends_on:
@@ -37,6 +37,8 @@ steps:
     image: quay.io/ukhomeofficedigital/hocs-helm-kubectl:1.0.0
     environment:
       KUBE_NAMESPACE: wcs-qa
+      KUBE_TOKEN:
+        from_secret: cs_notprod
     commands:
       - ./ci/helm/helm-deploy.sh --values ./helm/values-notprod.yaml --values ./helm/values-qa.yaml
     depends_on:
@@ -50,6 +52,8 @@ steps:
     image: quay.io/ukhomeofficedigital/hocs-helm-kubectl:1.0.0
     environment:
       KUBE_NAMESPACE: ${DRONE_DEPLOY_TO}
+      KUBE_TOKEN:
+        from_secret: cs_notprod
     commands:
       - ./ci/helm/helm-deploy.sh --values ./helm/values-notprod.yaml --values ./helm/values-demo.yaml
     depends_on:
@@ -62,6 +66,8 @@ steps:
     image: quay.io/ukhomeofficedigital/hocs-helm-kubectl:1.0.0
     environment:
       KUBE_NAMESPACE: ${DRONE_DEPLOY_TO}
+      KUBE_TOKEN:
+        from_secret: cs_notprod
     commands:
       - ./ci/helm/helm-deploy.sh --values ./helm/values-notprod.yaml --values ./helm/values-qax.yaml
     depends_on:
