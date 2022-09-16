@@ -13,7 +13,7 @@ steps:
     image: quay.io/ukhomeofficedigital/hocs-helm-kubectl:1.0.0
     commands:
       - git fetch --tags
-      - git checkout --recurse-submodules ${DRONE_TAG}
+      - git checkout ${DRONE_TAG}
       - git submodule update --init --recursive
 
   - &deploy
