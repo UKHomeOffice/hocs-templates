@@ -26,11 +26,10 @@ steps:
       KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
       KUBE_TOKEN:
         from_secret: cs_notprod
-      VALUES_FILE: '--values ./helm/values-notprod.yaml'
       VERSION: ${DRONE_TAG}
     commands:
       - ./ci/helm/setup-kube.sh
-      - ./ci/helm/helm-deploy.sh
+      - ./ci/helm/helm-deploy.sh --values ./helm/values-notprod.yaml
     depends_on:
       - checkout
 
