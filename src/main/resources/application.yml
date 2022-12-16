@@ -27,4 +27,3 @@ hocs:
   case-service: http://localhost:8082
   document-service: http://localhost:8083
   info-service: http://localhost:8085
-  basicauth: UNSET
