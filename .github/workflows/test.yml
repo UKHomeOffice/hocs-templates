@@ -5,4 +5,5 @@ on:
 
 jobs:
   test:
-    uses: UKHomeOffice/hocs-github-actions/.github/workflows/test-gradle.yml@v2
+    uses: UKHomeOffice/sas-github-workflows/.github/workflows/test-gradle.yml@v1
+    secrets: inherit
