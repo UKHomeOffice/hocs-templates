@@ -28,7 +28,7 @@ dependencies {
 	implementation "org.docx4j:docx4j-JAXB-ReferenceImpl:${docx4jVersion}"
 	implementation "jakarta.xml.bind:jakarta.xml.bind-api:${jaxbVersion}"
 	implementation "com.sun.xml.bind:jaxb-impl:${jaxbVersion}"
-	implementation 'jakarta.activation:jakarta.activation-api:2.1.1'
+	implementation 'jakarta.activation:jakarta.activation-api:2.1.2'
 
 	compileOnly "org.projectlombok:lombok:${lombokVersion}"
 	annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
