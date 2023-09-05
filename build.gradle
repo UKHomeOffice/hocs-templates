@@ -1,7 +1,7 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '2.7.13'
-	id 'io.spring.dependency-management' version '1.1.0'
+	id 'org.springframework.boot' version '2.7.15'
+	id 'io.spring.dependency-management' version '1.1.3'
 }
 
 def docx4jVersion = '11.4.9'
@@ -36,7 +36,7 @@ dependencies {
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'com.github.tomakehurst:wiremock-standalone:2.27.2'
+	testImplementation 'com.github.tomakehurst:wiremock-standalone:3.0.1'
 
 }
 
