@@ -5,7 +5,7 @@ plugins {
 }
 
 def docx4jVersion = '11.4.9'
-def jaxbVersion = '4.0.0'
+def jaxbVersion = '4.0.1'
 def lombokVersion = '1.18.28'
 
 group = 'uk.gov.digital.ho.hocs'
