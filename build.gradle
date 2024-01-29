@@ -47,3 +47,7 @@ jar {
 test {
 	useJUnitPlatform()
 }
+
+tasks.named('bootJar') {
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
