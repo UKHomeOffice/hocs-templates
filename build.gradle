@@ -5,7 +5,7 @@ plugins {
 }
 
 def docx4jVersion = '11.4.8'
-def jaxbVersion = '4.0.0'
+def jaxbVersion = '4.0.1'
 def lombokVersion = '1.18.30'
 
 group = 'uk.gov.digital.ho.hocs'
@@ -22,7 +22,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-undertow'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
-	implementation 'net.logstash.logback:logstash-logback-encoder:7.3'
+	implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
 
 	implementation "org.docx4j:docx4j-core:${docx4jVersion}"
 	implementation "org.docx4j:docx4j-JAXB-ReferenceImpl:${docx4jVersion}"
@@ -36,7 +36,7 @@ dependencies {
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'com.github.tomakehurst:wiremock-standalone:2.27.2'
+	testImplementation 'com.github.tomakehurst:wiremock-standalone:3.0.1'
 
 }
 
