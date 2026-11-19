@@ -7,3 +7,5 @@ jobs:
   test:
     uses: UKHomeOffice/sas-github-workflows/.github/workflows/test-gradle.yml@v2
     secrets: inherit
+    with:
+      dockerComposeBinary: 'docker compose'
